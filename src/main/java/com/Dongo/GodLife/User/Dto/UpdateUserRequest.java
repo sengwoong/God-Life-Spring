@@ -4,29 +4,19 @@ import com.Dongo.GodLife.User.Model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Getter
 @NoArgsConstructor
-public class UserResponse {
-    private Long Id;
+public class UpdateUserRequest {
     private String nickName;
-    private int sales;
     private String phoneNumber;
     private String address;
     private String email;
-    private LocalDateTime createdAt;
 
-
-    public UserResponse(User user) {
-        this.Id = user.getId();
+    public UpdateUserRequest(User user) {
         this.nickName = user.getNickName();
-        this.sales = user.getSales();
         this.phoneNumber = user.getPhoneNumber();
         this.address = user.getAddress();
         this.email = user.getEmail();
-        this.createdAt = user.getCreatedAt();
-
     }
+
 }
