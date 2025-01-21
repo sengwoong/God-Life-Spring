@@ -23,13 +23,15 @@ public class UserController {
         return ResponseEntity.ok(userService.createUser(request.getEmail(), request.getPassword(),request.getNickName()));
     }
 
-    @GetMapping("user/{userId}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable long userId) {
-        return ResponseEntity.ok(userService.getUserByUserDetail(userId));
+    @GetMapping("user/{user_id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable long user_id) {
+        return ResponseEntity.ok(userService.getUserByUserDetail(user_id));
     }
 
-    @PutMapping("user/{userId}")
-    public ResponseEntity<UpdateUserRequest> updateUser(@PathVariable long userId, @RequestBody UpdateUserRequest user) {
-        return ResponseEntity.ok(userService.updateUser(userId, user));
+    @PutMapping("user/{user_id}")
+    public ResponseEntity<UpdateUserRequest> updateUser(@PathVariable long user_id, @RequestBody UpdateUserRequest user) {
+        return ResponseEntity.ok(userService.updateUser(user_id, user));
     }
+
+
 }
