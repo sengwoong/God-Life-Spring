@@ -8,5 +8,6 @@ public interface UserPersistenceAdapter {
 
     User save(User userRequest);
 
+    Optional<User> findById(Long id);
 
 }

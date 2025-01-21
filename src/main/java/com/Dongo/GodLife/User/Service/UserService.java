@@ -1,6 +1,7 @@
 package com.Dongo.GodLife.User.Service;
 
 
+import com.Dongo.GodLife.User.Exception.UserNotFoundException;
 import com.Dongo.GodLife.User.Model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,11 @@ public class UserService {
         user.setNickName(nickName);
         user.setCreatedAt(LocalDateTime.now());
         return userRepository.save(user);
+    }
+
+    public User CheckUserAndGetUser(long Id) {
+        return userRepository.findById(Id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with Id: " + Id));
     }
 
 

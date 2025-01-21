@@ -7,6 +7,8 @@ import com.Dongo.GodLife.User.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class UserAdapterImpl implements UserPersistenceAdapter {
 
@@ -28,5 +30,9 @@ public class UserAdapterImpl implements UserPersistenceAdapter {
         return userRepository.save(user);
     }
 
+    @Override
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
 
 }
