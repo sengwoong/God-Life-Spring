@@ -52,5 +52,9 @@ public class UserService {
         return new UpdateUserRequest(updatedUser);
     }
 
+    public void deleteUser(long Id) {
+        User user = CheckUserAndGetUser(Id);
+        userRepository.delete(Id);
+    }
 
 }

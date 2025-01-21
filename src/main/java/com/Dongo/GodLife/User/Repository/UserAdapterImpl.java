@@ -2,6 +2,7 @@ package com.Dongo.GodLife.User.Repository;
 
 
 
+import com.Dongo.GodLife.User.Exception.UserNotFoundException;
 import com.Dongo.GodLife.User.Service.UserPersistenceAdapter;
 import com.Dongo.GodLife.User.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,4 +36,10 @@ public class UserAdapterImpl implements UserPersistenceAdapter {
         return userRepository.findById(id);
     }
 
+    @Override
+    public void delete(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
+        userRepository.delete(user);
+    }
 }

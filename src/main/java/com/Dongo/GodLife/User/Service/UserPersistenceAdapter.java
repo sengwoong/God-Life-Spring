@@ -10,4 +10,5 @@ public interface UserPersistenceAdapter {
 
     Optional<User> findById(Long id);
 
+    void delete(Long id);
 }
