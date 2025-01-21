@@ -15,4 +15,6 @@ public interface VocaPersistenceAdapter  {
 
     @Nullable Page<Voca> findByUser(@NotNull User user, Pageable pageable);
 
+    @Nullable Optional<Voca> findById(@NotNull long id);
+
 }

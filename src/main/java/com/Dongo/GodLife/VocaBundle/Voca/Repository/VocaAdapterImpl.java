@@ -28,4 +28,9 @@ public class VocaAdapterImpl implements VocaPersistenceAdapter {
         return vocaRepository.findByUser(user, pageable);
     }
 
+    @Override
+    public Optional<Voca> findById(long id) {
+        // JpaRepository의 기본 제공 메서드 사용
+        return Optional.ofNullable(vocaRepository.findById(id).orElse(null));
+    }
 }
