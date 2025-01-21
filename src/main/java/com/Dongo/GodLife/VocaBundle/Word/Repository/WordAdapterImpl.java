@@ -2,6 +2,7 @@ package com.Dongo.GodLife.VocaBundle.Word.Repository;
 
 import com.Dongo.GodLife.VocaBundle.Voca.Model.Voca;
 import com.Dongo.GodLife.VocaBundle.Voca.Repository.VocaRepository;
+import com.Dongo.GodLife.VocaBundle.Word.Exception.NotYourWordException;
 import com.Dongo.GodLife.VocaBundle.Word.Model.Word;
 import com.Dongo.GodLife.VocaBundle.Word.Service.WordPersistenceAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +40,19 @@ public class WordAdapterImpl implements WordPersistenceAdapter {
     @Override
     public Optional<Word> findById(long wordId) {
         return wordRepository.findById(wordId);
+    }
+
+    @Override
+    public Word delete(long wordId) throws NotYourWordException {
+
+        Optional<Word> word = wordRepository.findById(wordId);
+
+        if (word.isEmpty()) {
+            throw new NotYourWordException("Word not found");
+        }
+
+        wordRepository.deleteById(wordId);
+
+        return word.get();
     }
     }

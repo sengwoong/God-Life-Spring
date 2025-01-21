@@ -46,4 +46,18 @@ public class WordService { // 이름 변경: WordService → WordManagementServi
 
         return wordRepository.save(word);
     }
+
+    public Word deleteWord(long wordId, long userId) throws NotYourWordException {
+
+        Word word = wordRepository.findById(wordId)
+                .orElseThrow(() -> new EntityNotFoundException("Word not found with id: " + wordId));
+
+        if( !word.getVoca().getUser().getId().equals(userId)){
+            throw new NotYourWordException("Access denied: User does not own the word");
+        }
+        wordRepository.delete(wordId);
+
+        return word;
+    }
+
 }
