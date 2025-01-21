@@ -17,8 +17,10 @@ public class Validator {
         }
     }
 
-
-
-
+    public static void validateNotNegative(long value, String message) {
+        if (value <= 0 || value % 10 != 0) {
+            throw new IllegalArgumentException(message);
+        }
+    }
 
 }
