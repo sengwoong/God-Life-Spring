@@ -2,6 +2,7 @@ package com.Dongo.GodLife.User.Controller;
 
 
 import com.Dongo.GodLife.User.Dto.UpdateUserRequest;
+import com.Dongo.GodLife.User.Dto.UserCreateRequest;
 import com.Dongo.GodLife.User.Dto.UserResponse;
 import com.Dongo.GodLife.User.Model.User;
 import com.Dongo.GodLife.User.Service.UserService;
@@ -26,13 +27,5 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserById(@PathVariable long userId) {
         return ResponseEntity.ok(userService.getUserByUserDetail(userId));
     }
-
-
-
-    @PutMapping("user/{userId}")
-    public ResponseEntity<UpdateUserRequest> updateUser(@PathVariable long userId, @RequestBody UpdateUserRequest user) {
-        return ResponseEntity.ok(userService.updateUser(userId, user));
-    }
-
 
 }
