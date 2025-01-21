@@ -2,6 +2,7 @@ package com.Dongo.GodLife.VocaBundle.Word.Service;
 
 import com.Dongo.GodLife.VocaBundle.Voca.Model.Voca;
 import com.Dongo.GodLife.VocaBundle.Word.Dto.WordRequest;
+import com.Dongo.GodLife.VocaBundle.Word.Exception.NotYourWordException;
 import com.Dongo.GodLife.VocaBundle.Word.Model.Word;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,4 +31,19 @@ public class WordService { // 이름 변경: WordService → WordManagementServi
         return wordRepository.getAllWordsByVocaId(vocaId, pageable);
     }
 
+    public Word updateWord(long wordId,long userId, WordRequest wordRequest) throws NotYourWordException {
+
+        Word word = wordRepository.findById(wordId)
+                .orElseThrow(() -> new EntityNotFoundException("Word not found with id: " + wordId));
+
+
+        if(!word.getVoca().getUser().getId().equals(userId)){
+            throw new NotYourWordException("Access denied: User does not own the word");
+        }
+
+        word.setWord(wordRequest.getWord());
+        word.setMeaning(wordRequest.getMeaning());
+
+        return wordRepository.save(word);
+    }
 }

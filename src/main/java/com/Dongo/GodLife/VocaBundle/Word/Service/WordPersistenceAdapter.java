@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface WordPersistenceAdapter {
 
-
     Word save(Word wordRequest);
 
     Page<Word> getAllWordsByVocaId(long vocaId, Pageable pageable);
 
+    Optional<Word> findById(long wordId);
 }

@@ -36,4 +36,8 @@ public class WordAdapterImpl implements WordPersistenceAdapter {
         return wordRepository.getAllWordsByVocaVocaId(vocaId, pageable);
     }
 
+    @Override
+    public Optional<Word> findById(long wordId) {
+        return wordRepository.findById(wordId);
+    }
     }
