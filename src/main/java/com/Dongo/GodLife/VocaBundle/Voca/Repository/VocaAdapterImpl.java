@@ -23,6 +23,9 @@ public class VocaAdapterImpl implements VocaPersistenceAdapter {
     public Voca save(Voca voca) {
         return vocaRepository.save(voca);
     }
-
+    @Override
+    public  Page<Voca> findByUser(User user, Pageable pageable) {
+        return vocaRepository.findByUser(user, pageable);
+    }
 
 }

@@ -11,8 +11,8 @@ import java.util.Optional;
 
 public interface VocaPersistenceAdapter  {
 
-
     Voca save(Voca voca);
 
+    @Nullable Page<Voca> findByUser(@NotNull User user, Pageable pageable);
 
 }

@@ -30,6 +30,9 @@ public class VocaService {
         return vocaRepository.save(voca);
     }
 
+    public Page<Voca> getAllVocasByUserId(User user, Pageable pageable) {
+        return vocaRepository.findByUser(user, pageable);
+    }
 
 
 }
