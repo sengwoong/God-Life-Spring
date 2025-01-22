@@ -1,6 +1,7 @@
 package com.Dongo.GodLife.VocaBundle.Word.Service;
 
 import com.Dongo.GodLife.VocaBundle.Voca.Model.Voca;
+import com.Dongo.GodLife.VocaBundle.Voca.Service.VocaPersistenceAdapter;
 import com.Dongo.GodLife.VocaBundle.Word.Dto.WordRequest;
 import com.Dongo.GodLife.VocaBundle.Word.Exception.NotYourWordException;
 import com.Dongo.GodLife.VocaBundle.Word.Model.Word;
@@ -13,10 +14,15 @@ import util.Validator;
 
 @Service
 @RequiredArgsConstructor
-public class WordService { // 이름 변경: WordService → WordManagementService
+public class WordService {
     private final WordPersistenceAdapter wordRepository;
+    private final VocaPersistenceAdapter vocaRepository;
 
     public Word saveWord(WordRequest wordRequest) {
+
+        Voca voca = vocaRepository.findById(wordRequest.getVocaId())
+                .orElseThrow(() -> new EntityNotFoundException("단어장을 찾을 수 없습니다."));
+
 
         Validator.validateNotEmpty(wordRequest.getWord(), "Word cannot be empty");
         Validator.validateNotEmpty(wordRequest.getMeaning(), "Word meaning cannot be empty");
@@ -24,6 +30,7 @@ public class WordService { // 이름 변경: WordService → WordManagementServi
         Word word = new Word();
         word.setWord(wordRequest.getWord());
         word.setMeaning(wordRequest.getMeaning());
+        word.setVoca(voca);
         return wordRepository.save(word);
     }
 
