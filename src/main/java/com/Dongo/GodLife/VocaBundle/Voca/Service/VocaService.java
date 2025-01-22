@@ -57,4 +57,12 @@ public class VocaService {
         return vocaRepository.save(voca);
     }
 
+    public void deleteVoca(long vocaId,long userId) throws NotYourVocaException {
+        Optional<Voca> voca = vocaRepository.findById(vocaId);
+        if(!voca.get().getUser().getId().equals(userId)){
+            throw new NotYourVocaException("Access denied: User does not own the playlist");
+        }
+
+        vocaRepository.delete(voca.orElse(null));
+    }
 }

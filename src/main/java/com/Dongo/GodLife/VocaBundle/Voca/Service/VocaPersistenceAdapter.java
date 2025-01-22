@@ -17,4 +17,5 @@ public interface VocaPersistenceAdapter  {
 
     @Nullable Optional<Voca> findById(@NotNull long id);
 
+    Voca delete(Voca voca);
 }

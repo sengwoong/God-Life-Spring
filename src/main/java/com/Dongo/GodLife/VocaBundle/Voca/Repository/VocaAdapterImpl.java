@@ -30,7 +30,12 @@ public class VocaAdapterImpl implements VocaPersistenceAdapter {
 
     @Override
     public Optional<Voca> findById(long id) {
-        // JpaRepository의 기본 제공 메서드 사용
         return Optional.ofNullable(vocaRepository.findById(id).orElse(null));
+    }
+
+    @Override
+    public Voca delete(Voca voca) {
+        vocaRepository.delete(voca);
+        return voca;
     }
 }
