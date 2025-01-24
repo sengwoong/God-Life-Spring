@@ -1,5 +1,6 @@
 package com.Dongo.GodLife.ScheduleBundle.Schedule.Service;
 
+import com.Dongo.GodLife.ScheduleBundle.Schedule.Exception.NotYourScheduleException;
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Model.Schedule;
 import com.Dongo.GodLife.User.Model.User;
 import org.springframework.data.domain.Page;
@@ -15,4 +16,5 @@ public interface SchedulePersistenceAdapter {
 
     Page<Schedule> findByUser(User user, Pageable pageable);
 
+    Schedule delete(Schedule schedule) throws NotYourScheduleException;
 }

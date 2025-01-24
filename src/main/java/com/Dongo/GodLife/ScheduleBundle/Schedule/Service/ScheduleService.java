@@ -59,4 +59,13 @@ public class ScheduleService {
         schedule.setEndTime(scheduleRequest.getEndTime());
         return scheduleRepository.save(schedule);
     }
+
+    public void deleteSchedule(long userId ,long scheduleId) throws  NotYourScheduleException {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
+        if (!schedule.getUser().getId().equals(userId)) {
+            throw new NotYourScheduleException("Access denied: User does not own the schedule");
+        }
+        scheduleRepository.delete(schedule);
+    }
 }

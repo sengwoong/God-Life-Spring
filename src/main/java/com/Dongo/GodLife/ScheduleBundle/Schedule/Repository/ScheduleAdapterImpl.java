@@ -38,4 +38,10 @@ public class ScheduleAdapterImpl implements SchedulePersistenceAdapter {
         return scheduleRepository.findByUser(user, pageable);
     }
 
+    @Override
+    public Schedule delete(Schedule schedule) {
+        // JpaRepository의 delete 메서드 사용
+        scheduleRepository.delete(schedule);
+        return schedule;
+    }
 }
