@@ -6,6 +6,8 @@ import com.Dongo.GodLife.ScheduleBundle.Schedule.Model.Schedule;
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Service.SchedulePersistenceAdapter;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 
 @Component
 public class ScheduleAdapterImpl implements SchedulePersistenceAdapter {
@@ -24,5 +26,9 @@ public class ScheduleAdapterImpl implements SchedulePersistenceAdapter {
         return scheduleRepository.save(schedule);
     }
 
-
+    @Override
+    public Optional<Schedule> findById(long id) {
+        // JpaRepository의 기본 제공 메서드 사용
+        return scheduleRepository.findById(id);
+    }
 }

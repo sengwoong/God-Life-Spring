@@ -8,7 +8,8 @@ import java.util.Optional;
 
 public interface SchedulePersistenceAdapter {
 
-
     Schedule save(Schedule schedule);
+
+    Optional<Schedule> findById(long ScheduleId);
 
 }

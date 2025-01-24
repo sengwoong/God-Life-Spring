@@ -5,6 +5,7 @@ package com.Dongo.GodLife.ScheduleBundle.Schedule.Service;
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Dto.ScheduleRequest;
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Model.Schedule;
 import com.Dongo.GodLife.User.Model.User;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,4 +28,8 @@ public class ScheduleService {
         return scheduleRepository.save(schedule);
     }
 
+    public Schedule getScheduleById(Long scheduleId) {
+        return scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
+    }
 }
