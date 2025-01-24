@@ -14,7 +14,7 @@ public interface SchedulePersistenceAdapter {
 
     Optional<Schedule> findById(long ScheduleId);
 
-    Page<Schedule> findByUser(User user, Pageable pageable);
+    Page<Schedule> findByUser(User user, Pageable pageable) throws NotYourScheduleException;
 
     Schedule delete(Schedule schedule) throws NotYourScheduleException;
 }
