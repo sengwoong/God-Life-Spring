@@ -1,6 +1,7 @@
 package com.Dongo.GodLife.User.Model;
 
 
+import com.Dongo.GodLife.ScheduleBundle.Schedule.Model.Schedule;
 import com.Dongo.GodLife.VocaBundle.Voca.Model.Voca;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -38,6 +39,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Voca> voca ;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Schedule> schedules;
 
 
     @PrePersist

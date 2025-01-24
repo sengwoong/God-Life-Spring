@@ -1,8 +1,10 @@
 package com.Dongo.GodLife.ScheduleBundle.Schedule.Model;
 
 
+import com.Dongo.GodLife.ScheduleBundle.Alarm.Model.Alarm;
 import com.Dongo.GodLife.User.Model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +21,10 @@ public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
+
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Alarm alarm;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
