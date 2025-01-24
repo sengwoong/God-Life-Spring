@@ -7,6 +7,8 @@ import com.Dongo.GodLife.ScheduleBundle.Schedule.Model.Schedule;
 import com.Dongo.GodLife.User.Model.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,5 +33,9 @@ public class ScheduleService {
     public Schedule getScheduleById(Long scheduleId) {
         return scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
+    }
+
+    public Page<Schedule> getAllschedulesByUserId(User user, Pageable pageable) {
+        return scheduleRepository.findByUser(user, pageable);
     }
 }
