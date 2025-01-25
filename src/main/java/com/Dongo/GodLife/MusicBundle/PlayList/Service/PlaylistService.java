@@ -49,4 +49,13 @@ public class PlaylistService {
 
         return playlistRepository.save(playlist);
     }
+
+    public void deletePlaylist(long postId,long userId) throws NotYourPlaylistException {
+        Playlist playlist = playlistRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Playlist not found with id: " + postId));
+        if (!playlist.getUser().getId().equals(userId)) {
+            throw new NotYourPlaylistException("Access denied: User does not own the playlist");
+        }
+        playlistRepository.delete(playlist);
+    }
 }

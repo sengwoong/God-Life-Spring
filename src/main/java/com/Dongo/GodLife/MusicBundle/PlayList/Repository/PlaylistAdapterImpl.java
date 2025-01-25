@@ -1,6 +1,7 @@
 package com.Dongo.GodLife.MusicBundle.PlayList.Repository;
 
 
+import com.Dongo.GodLife.MusicBundle.Exception.NotYourPlaylistException;
 import com.Dongo.GodLife.MusicBundle.PlayList.Model.Playlist;
 import com.Dongo.GodLife.MusicBundle.PlayList.Service.PlaylistPersistenceAdapter;
 import com.Dongo.GodLife.User.Model.User;
@@ -32,5 +33,15 @@ public class PlaylistAdapterImpl implements PlaylistPersistenceAdapter {
     @Override
     public Optional<Playlist> findById(long playlistId) {
         return playlistRepository.findById(playlistId);
+    }
+
+    @Override
+    public Playlist delete(Playlist playlist) throws NotYourPlaylistException {
+
+        if (playlist == null) {
+            throw new NotYourPlaylistException("Playlist cannot be null");
+        }
+        playlistRepository.delete(playlist);
+        return playlist;
     }
 }
