@@ -4,6 +4,7 @@ package com.Dongo.GodLife.ScheduleBundle.Alarm.Service;
 import com.Dongo.GodLife.ScheduleBundle.Alarm.Exception.NotYourAlarmException;
 import com.Dongo.GodLife.ScheduleBundle.Alarm.Model.Alarm;
 import com.Dongo.GodLife.ScheduleBundle.Alarm.Dto.AlarmRequest;
+import com.Dongo.GodLife.ScheduleBundle.Schedule.Exception.NotYourScheduleException;
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Model.Schedule;
 import com.Dongo.GodLife.User.Model.User;
 import jakarta.persistence.EntityNotFoundException;
@@ -46,5 +47,16 @@ public class AlarmService {
         alarm.setAlarmcontent(alarmRequest.getAlarmContent());
 
         return alarmRepository.save(alarm);
+    }
+
+    public void deleteAlarm(User user, long alarmId) throws NotYourAlarmException, NotYourScheduleException {
+        Alarm alarm = alarmRepository.findById(alarmId)
+                .orElseThrow(() -> new IllegalArgumentException("Alarm not found with id: " + alarmId));
+
+        if (!alarm.getUser().equals(user)) {
+            throw new NotYourAlarmException("Access denied: User does not own the alarm");
+        }
+
+        alarmRepository.delete(alarm);
     }
 }

@@ -25,4 +25,10 @@ public class AlarmAdapterImpl implements AlarmPersistenceAdapter {
     public Optional<Alarm> findById(long id) {
         return alarmRepository.findById(id);
     }
+
+    @Override
+    public Alarm delete(Alarm alarm) {
+        alarmRepository.delete(alarm);
+        return alarm;
+    }
 }
