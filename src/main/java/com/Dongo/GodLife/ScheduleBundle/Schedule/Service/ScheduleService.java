@@ -37,7 +37,7 @@ public class ScheduleService {
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
     }
 
-    public Page<Schedule> getAllschedulesByUserId(User user, Pageable pageable) {
+    public Page<Schedule> getAllschedulesByUserId(User user, Pageable pageable) throws NotYourScheduleException {
         return scheduleRepository.findByUser(user, pageable);
     }
 
