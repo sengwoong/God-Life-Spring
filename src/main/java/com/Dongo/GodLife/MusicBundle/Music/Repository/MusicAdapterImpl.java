@@ -19,7 +19,6 @@ public class MusicAdapterImpl implements MusicPersistenceAdapter {
         this.musicRepository = musicRepository;
     }
 
-
     @Override
     public Music save(Music music) {
         return musicRepository.save(music);
