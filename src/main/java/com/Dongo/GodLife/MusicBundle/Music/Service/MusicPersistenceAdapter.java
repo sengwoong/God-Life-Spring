@@ -10,6 +10,6 @@ public interface MusicPersistenceAdapter {
 
     Music save(Music music);
 
-
+    Page<Music> findPlaylistMusics(long musicId, Pageable pageable);
 }
 

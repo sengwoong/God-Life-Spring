@@ -24,4 +24,9 @@ public class MusicAdapterImpl implements MusicPersistenceAdapter {
         return musicRepository.save(music);
     }
 
+    @Override
+    public Page<Music> findPlaylistMusics(long musicId, Pageable pageable) {
+        return musicRepository.findAllByPlaylist_PlaylistId(musicId,pageable);
+    }
+
 }

@@ -24,5 +24,8 @@ public class MusicService {
         return musicRepository.save(music);
     }
 
+    public Page<Music> getAllMusicByPlaylist(long playlistId, Pageable pageable) {
+        return musicRepository.findPlaylistMusics(playlistId,pageable);
+    }
 
 }
