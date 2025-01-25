@@ -26,5 +26,7 @@ public class PlaylistService {
         return playlistRepository.save(playlist);
     }
 
-
+    public Page<Playlist> getAllPlaylistsByUserId( User user,Pageable pageable) {
+        return playlistRepository.findByUser(user, pageable);
+    }
 }
