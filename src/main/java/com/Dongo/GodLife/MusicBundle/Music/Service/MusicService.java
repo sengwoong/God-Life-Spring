@@ -2,7 +2,10 @@ package com.Dongo.GodLife.MusicBundle.Music.Service;
 
 
 import com.Dongo.GodLife.MusicBundle.Music.Dto.MusicRequest;
+import com.Dongo.GodLife.MusicBundle.Music.Exception.NotYourMusicException;
 import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
+import com.Dongo.GodLife.User.Model.User;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,4 +31,17 @@ public class MusicService {
         return musicRepository.findPlaylistMusics(playlistId,pageable);
     }
 
+    public Music updateMusic(long musicId, User user, MusicRequest musicRequest) {
+        Music music = musicRepository.findById(musicId)
+                .orElseThrow(() -> new EntityNotFoundException("Music not found with id: " + musicId));
+
+        if (!music.getPlaylist().getUser().equals(user)) {
+            throw new NotYourMusicException("Access denied: User does not own the music");
+        }
+
+        music.setMusicTitle(musicRequest.getMusicTitle());
+        music.setMusicUrl(musicRequest.getMusicUrl());
+
+        return musicRepository.save(music);
+    }
 }
