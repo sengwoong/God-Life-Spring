@@ -1,7 +1,7 @@
 package com.Dongo.GodLife.MusicBundle.PlayList.Repository;
 
 
-import com.Dongo.GodLife.MusicBundle.Exception.NotYourPlaylistException;
+import com.Dongo.GodLife.MusicBundle.PlayList.Exception.NotYourPlaylistException;
 import com.Dongo.GodLife.MusicBundle.PlayList.Model.Playlist;
 import com.Dongo.GodLife.MusicBundle.PlayList.Service.PlaylistPersistenceAdapter;
 import com.Dongo.GodLife.User.Model.User;

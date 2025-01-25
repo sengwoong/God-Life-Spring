@@ -1,7 +1,7 @@
 package com.Dongo.GodLife.MusicBundle.PlayList.Service;
 
 
-import com.Dongo.GodLife.MusicBundle.Exception.NotYourPlaylistException;
+import com.Dongo.GodLife.MusicBundle.PlayList.Exception.NotYourPlaylistException;
 import com.Dongo.GodLife.MusicBundle.PlayList.Model.Playlist;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

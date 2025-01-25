@@ -2,8 +2,8 @@ package com.Dongo.GodLife.MusicBundle.PlayList.Service;
 
 
 
-import com.Dongo.GodLife.MusicBundle.Dto.PlaylistRequest;
-import com.Dongo.GodLife.MusicBundle.Exception.NotYourPlaylistException;
+import com.Dongo.GodLife.MusicBundle.PlayList.Dto.PlaylistRequest;
+import com.Dongo.GodLife.MusicBundle.PlayList.Exception.NotYourPlaylistException;
 import com.Dongo.GodLife.MusicBundle.PlayList.Model.Playlist;
 import com.Dongo.GodLife.User.Model.User;
 import jakarta.persistence.EntityNotFoundException;

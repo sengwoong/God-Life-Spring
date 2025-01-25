@@ -1,4 +1,4 @@
-package com.Dongo.GodLife.MusicBundle.Dto;
+package com.Dongo.GodLife.MusicBundle.PlayList.Dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
