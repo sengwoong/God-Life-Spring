@@ -44,4 +44,15 @@ public class MusicService {
 
         return musicRepository.save(music);
     }
+
+    public void deleteMusic(long musicId, User user) {
+        Music music = musicRepository.findById(musicId)
+                .orElseThrow(() -> new EntityNotFoundException("Music not found with id: " + musicId));
+
+        if (!music.getPlaylist().getPlaylistId().equals(user.getId())) {
+            throw new NotYourMusicException("You are not the owner of this music.");
+        }
+
+        musicRepository.delete(music);
+    }
 }

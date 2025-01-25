@@ -1,5 +1,6 @@
 package com.Dongo.GodLife.MusicBundle.Music.Service;
 
+import com.Dongo.GodLife.MusicBundle.Music.Exception.NotYourMusicException;
 import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,8 @@ public interface MusicPersistenceAdapter {
     Page<Music> findPlaylistMusics(long musicId, Pageable pageable);
 
     Optional<Music> findById(long musicId);
+
+    Music delete(Music music) throws NotYourMusicException;
 
 }
 

@@ -2,6 +2,7 @@ package com.Dongo.GodLife.MusicBundle.Music.Repository;
 
 
 
+import com.Dongo.GodLife.MusicBundle.Music.Exception.NotYourMusicException;
 import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
 import com.Dongo.GodLife.MusicBundle.Music.Service.MusicPersistenceAdapter;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,15 @@ public class MusicAdapterImpl implements MusicPersistenceAdapter {
     @Override
     public Optional<Music> findById(long musicId) {
         return musicRepository.findById(musicId);
+    }
+
+    @Override
+    public Music delete(Music music) throws NotYourMusicException {
+        if (music == null) {
+            throw new NotYourMusicException("Music cannot be null");
+        }
+        musicRepository.delete(music);
+        return music;
     }
 
 }
