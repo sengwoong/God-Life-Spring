@@ -21,37 +21,38 @@ public class ScheduleController {
     private final UserService userService;
 
     @PostMapping("/user/{user_id}")
-    public ResponseEntity<Schedule> createSchedule(@PathVariable long user_id,
-                                                   @RequestBody ScheduleRequest request) {
+    public ResponseEntity<Schedule> createSchedule(
+            @PathVariable(name = "user_id") long user_id,
+            @RequestBody ScheduleRequest request) {
         User user = userService.CheckUserAndGetUser(user_id);
         return ResponseEntity.ok(scheduleService.createSchedule(request, user));
     }
 
     @GetMapping("/user/{user_id}")
     public ResponseEntity<Page<Schedule>> getScheduleByVocaId(
-            @PathVariable long user_id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) throws NotYourScheduleException {
-            Pageable pageable = PageRequest.of(page, size);
-            User user = userService.CheckUserAndGetUser(user_id);
-            Page<Schedule> schedules = scheduleService.getAllschedulesByUserId(user, pageable);
-            return ResponseEntity.ok(schedules);
-
-
+            @PathVariable(name = "user_id") long user_id,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) throws NotYourScheduleException {
+        Pageable pageable = PageRequest.of(page, size);
+        User user = userService.CheckUserAndGetUser(user_id);
+        Page<Schedule> schedules = scheduleService.getAllschedulesByUserId(user, pageable);
+        return ResponseEntity.ok(schedules);
     }
 
     @PutMapping("/schedule/{schedule_id}/user/{user_id}")
     public ResponseEntity<Schedule> updateSchedule(
-            @PathVariable long schedule_id,
-            @PathVariable long user_id,
+            @PathVariable(name = "schedule_id") long schedule_id,
+            @PathVariable(name = "user_id") long user_id,
             @RequestBody ScheduleRequest scheduleRequest) throws NotYourScheduleException {
         Schedule updatedSchedule = scheduleService.updateSchedule(schedule_id, user_id, scheduleRequest);
         return ResponseEntity.ok(updatedSchedule);
     }
 
     @DeleteMapping("/schedule/{schedule_id}/user/{user_id}")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable long user_id,@PathVariable long schedule_id) throws NotYourScheduleException {
-        scheduleService.deleteSchedule(user_id,schedule_id);
+    public ResponseEntity<Void> deleteSchedule(
+            @PathVariable(name = "user_id") long user_id,
+            @PathVariable(name = "schedule_id") long schedule_id) throws NotYourScheduleException {
+        scheduleService.deleteSchedule(user_id, schedule_id);
         return ResponseEntity.noContent().build();
     }
 }
