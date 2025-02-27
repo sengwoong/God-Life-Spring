@@ -1,12 +1,13 @@
 package com.Dongo.GodLife.VocaBundle.Voca.Service;
 
-import com.Dongo.GodLife.User.Service.UserPersistenceAdapter;
+
 import com.Dongo.GodLife.User.Model.User;
-import com.Dongo.GodLife.User.Service.UserService;
+
 import com.Dongo.GodLife.VocaBundle.Voca.Dto.VocaRequest;
 import com.Dongo.GodLife.VocaBundle.Voca.Exception.NotYourVocaException;
 import com.Dongo.GodLife.VocaBundle.Voca.Exception.VocaNotFoundException;
 import com.Dongo.GodLife.VocaBundle.Voca.Model.Voca;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -60,9 +61,14 @@ public class VocaService {
     public void deleteVoca(long vocaId,long userId) throws NotYourVocaException {
         Optional<Voca> voca = vocaRepository.findById(vocaId);
         if(!voca.get().getUser().getId().equals(userId)){
-            throw new NotYourVocaException("Access denied: User does not own the playlist");
+            throw new NotYourVocaException("Access denied: User does not own the voca");
         }
 
         vocaRepository.delete(voca.orElse(null));
+    }
+
+    public Voca findById(Long id) {
+        Optional<Voca> voca = vocaRepository.findById(id);
+        return voca.orElse(null);
     }
 }

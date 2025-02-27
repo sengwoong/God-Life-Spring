@@ -24,35 +24,40 @@ public class VocaController {
     private final VocaService vocaService;
     private final UserService userService;
 
-
     @PostMapping("/user/{user_id}")
-    public ResponseEntity<Voca> createVoca(@PathVariable long user_id, @RequestBody @Valid VocaRequest voca) {
-        User user = userService.CheckUserAndGetUser(user_id);
-        return ResponseEntity.ok(vocaService.createVoca(user, voca));
+    public ResponseEntity<Voca> createVoca(
+            @PathVariable(name = "user_id") long userId,
+            @RequestBody @Valid VocaRequest vocaRequest) {
+        User user = userService.CheckUserAndGetUser(userId);
+        Voca voca = vocaService.createVoca(user, vocaRequest);
+        return ResponseEntity.ok(voca);
     }
-
 
     @GetMapping("/user/{user_id}")
-    public ResponseEntity<Page<Voca>> getVocasUserId(
-            @PathVariable long user_id,
+    public ResponseEntity<Page<Voca>> getVocasByUserId(
+            @PathVariable(name = "user_id") long userId,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
-            Pageable pageable)  {
-            User user = userService.CheckUserAndGetUser(user_id);
-            Page<Voca> vocas = vocaService.getAllVocasByUserId(user, pageable);
-            return ResponseEntity.ok(vocas);
-
+            Pageable pageable) {
+        User user = userService.CheckUserAndGetUser(userId);
+        Page<Voca> vocas = vocaService.getAllVocasByUserId(user, pageable);
+        return ResponseEntity.ok(vocas);
     }
 
-    @PutMapping("voca/{voca_id}/user/{user_id}")
-    public ResponseEntity<Voca> updateUser(@PathVariable long voca_id, @PathVariable long user_id, @RequestBody @Valid VocaRequest voca) throws  NotYourVocaException, VocaNotFoundException {
-        User user = userService.CheckUserAndGetUser(user_id);
-        return ResponseEntity.ok(vocaService.updateVoca(voca_id, user, voca));
+    @PutMapping("/voca/{voca_id}/user/{user_id}")
+    public ResponseEntity<Voca> updateVoca(
+            @PathVariable(name = "voca_id") long vocaId,
+            @PathVariable(name = "user_id") long userId,
+            @RequestBody @Valid VocaRequest vocaRequest) throws NotYourVocaException, VocaNotFoundException {
+        User user = userService.CheckUserAndGetUser(userId);
+        Voca updatedVoca = vocaService.updateVoca(vocaId, user, vocaRequest);
+        return ResponseEntity.ok(updatedVoca);
     }
 
-
-    @DeleteMapping("voca/{voca_id}/user/{user_id}")
-    public ResponseEntity<Void> deleteVoca(@PathVariable long voca_id,@PathVariable long user_id) throws NotYourVocaException {
-        vocaService.deleteVoca(voca_id,user_id);
+    @DeleteMapping("/voca/{voca_id}/user/{user_id}")
+    public ResponseEntity<Void> deleteVoca(
+            @PathVariable(name = "voca_id") long vocaId,
+            @PathVariable(name = "user_id") long userId) throws NotYourVocaException {
+        vocaService.deleteVoca(vocaId, userId);
         return ResponseEntity.noContent().build();
     }
 }

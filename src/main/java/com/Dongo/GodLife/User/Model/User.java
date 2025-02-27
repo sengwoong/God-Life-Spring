@@ -49,4 +49,9 @@ public class User {
     public void prePersist() {
         this.createdAt = LocalDateTime.now(); // 현재 시간 자동 설정
     }
+
+    // 이메일을 설정할 수 있는 생성자 추가
+    public User(String email) {
+        this.email = email;
+    }
 }
