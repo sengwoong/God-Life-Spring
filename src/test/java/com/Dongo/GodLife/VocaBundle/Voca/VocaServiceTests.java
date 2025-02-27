@@ -1,4 +1,4 @@
-package com.Dongo.GodLife.VocaBundle;
+package com.Dongo.GodLife.VocaBundle.Voca;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

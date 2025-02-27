@@ -30,31 +30,28 @@ public class WordController {
 
     @GetMapping("/voca/{voca_id}")
     public ResponseEntity<Page<Word>> getWordsByVocaId(
-            @PathVariable Long voca_id,
-            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        Page<Word> words = wordService.getAllwordsByVocaId(voca_id, pageable);
+            @PathVariable(name = "voca_id") Long vocaId,
+            Pageable pageable) {
+        Page<Word> words = wordService.getAllwordsByVocaId(vocaId, pageable);
         return ResponseEntity.ok(words);
     }
 
     @PutMapping("/word/{word_id}/user/{user_id}")
     public ResponseEntity<Word> updateWord(
-            @PathVariable Long user_id,
-            @PathVariable Long word_id,
+            @PathVariable(name = "user_id") Long userId,
+            @PathVariable(name = "word_id") Long wordId,
             @RequestBody WordRequest wordRequest) throws NotYourWordException {
-
-        userService.CheckUserAndGetUser(user_id);
-        Word updatedWord = wordService.updateWord(word_id,user_id,wordRequest);
+        userService.CheckUserAndGetUser(userId);
+        Word updatedWord = wordService.updateWord(wordId, userId, wordRequest);
         return ResponseEntity.ok(updatedWord);
     }
 
     @DeleteMapping("/word/{word_id}/user/{user_id}")
-    public ResponseEntity<Word> deleteWord(
-            @PathVariable Long user_id,
-            @PathVariable Long word_id) throws NotYourWordException {
-
-        userService.CheckUserAndGetUser(user_id);
-        wordService.deleteWord(word_id,user_id);
+    public ResponseEntity<Void> deleteWord(
+            @PathVariable(name = "user_id") Long userId,
+            @PathVariable(name = "word_id") Long wordId) throws NotYourWordException {
+        userService.CheckUserAndGetUser(userId);
+        wordService.deleteWord(wordId, userId);
         return ResponseEntity.noContent().build();
     }
 }

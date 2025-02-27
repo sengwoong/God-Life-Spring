@@ -1,4 +1,4 @@
-package com.Dongo.GodLife.VocaBundle;
+package com.Dongo.GodLife.VocaBundle.Voca;
 
 import com.Dongo.GodLife.VocaBundle.Voca.Model.Voca;
 import com.Dongo.GodLife.User.Model.User;
