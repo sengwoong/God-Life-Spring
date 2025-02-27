@@ -1,6 +1,5 @@
 package com.Dongo.GodLife.User.Controller;
 
-
 import com.Dongo.GodLife.User.Dto.UpdateUserRequest;
 import com.Dongo.GodLife.User.Dto.UserCreateRequest;
 import com.Dongo.GodLife.User.Dto.UserResponse;
@@ -19,22 +18,30 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody UserCreateRequest request) {
-        return ResponseEntity.ok(userService.createUser(request.getEmail(), request.getPassword(),request.getNickName()));
+    public ResponseEntity<User> createUser(
+            @RequestBody UserCreateRequest request) {
+        return ResponseEntity.ok(userService.createUser(
+            request.getEmail(), 
+            request.getPassword(),
+            request.getNickName()));
     }
 
     @GetMapping("user/{user_id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable long user_id) {
+    public ResponseEntity<UserResponse> getUserById(
+            @PathVariable(name = "user_id") long user_id) {
         return ResponseEntity.ok(userService.getUserByUserDetail(user_id));
     }
 
     @PutMapping("user/{user_id}")
-    public ResponseEntity<UpdateUserRequest> updateUser(@PathVariable long user_id, @RequestBody UpdateUserRequest user) {
+    public ResponseEntity<UpdateUserRequest> updateUser(
+            @PathVariable(name = "user_id") long user_id,
+            @RequestBody UpdateUserRequest user) {
         return ResponseEntity.ok(userService.updateUser(user_id, user));
     }
 
     @DeleteMapping("user/{user_id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable long user_id) {
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable(name = "user_id") long user_id) {
         userService.deleteUser(user_id);
         return ResponseEntity.noContent().build();
     }
