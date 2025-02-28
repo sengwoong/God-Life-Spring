@@ -20,6 +20,11 @@ public class Music {
     private Playlist playlist;
 
     private String musicTitle;
+
     private String musicUrl;
+
+    private String imageUrl;
+    
+    private String color;
 
 }
