@@ -13,8 +13,7 @@ import com.Dongo.GodLife.PointBundle.Point.Dto.PointRequest;
 import com.Dongo.GodLife.PointBundle.Point.Model.Point;
 import com.Dongo.GodLife.PointBundle.Point.Service.PointService;
 
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/points")
