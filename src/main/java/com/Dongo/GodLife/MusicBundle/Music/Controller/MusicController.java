@@ -3,6 +3,9 @@ package com.Dongo.GodLife.MusicBundle.Music.Controller;
 import com.Dongo.GodLife.MusicBundle.Music.Dto.MusicRequest;
 import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
 import com.Dongo.GodLife.MusicBundle.Music.Service.MusicService;
+import com.Dongo.GodLife.MusicBundle.PlayList.Exception.NotYourPlaylistException;
+import com.Dongo.GodLife.MusicBundle.PlayList.Model.Playlist;
+import com.Dongo.GodLife.MusicBundle.PlayList.Service.PlaylistService;
 import com.Dongo.GodLife.User.Model.User;
 import com.Dongo.GodLife.User.Service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +21,20 @@ public class MusicController {
 
     private final MusicService musicService;
     private final UserService userService;
+    private final PlaylistService playlistService;
 
-    @PostMapping
-    public ResponseEntity<Music> createMusic(@RequestBody MusicRequest musicRequest) {
+    @PostMapping("/playlist/{playlist_id}/user/{user_id}")
+    public ResponseEntity<Music> createMusic(
+        @PathVariable(name = "playlist_id") Long playlistId,
+            @PathVariable(name = "user_id") Long userId,
+            @RequestBody MusicRequest musicRequest) throws NotYourPlaylistException {
+        User user = userService.CheckUserAndGetUser(userId);      
+        Playlist playlist = playlistService.getById(playlistId);
+        if (!playlist.getUser().getId().equals(user.getId())) {
+            throw new NotYourPlaylistException("Access denied: User does not own the playlist");
+        }
         Music createdMusic = musicService.createMusic(musicRequest);
+        
         return ResponseEntity.ok(createdMusic);
     }
 

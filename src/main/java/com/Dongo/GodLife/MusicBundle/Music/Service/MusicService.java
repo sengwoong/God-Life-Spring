@@ -4,6 +4,7 @@ package com.Dongo.GodLife.MusicBundle.Music.Service;
 import com.Dongo.GodLife.MusicBundle.Music.Dto.MusicRequest;
 import com.Dongo.GodLife.MusicBundle.Music.Exception.NotYourMusicException;
 import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
+import com.Dongo.GodLife.MusicBundle.PlayList.Model.Playlist;
 import com.Dongo.GodLife.User.Model.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,12 @@ public class MusicService {
     private final MusicPersistenceAdapter musicRepository;
 
 
-    public Music createMusic(MusicRequest musicRequest) {
+    public Music createMusic(MusicRequest musicRequest, Playlist playlist) {
 
         Music music = new Music();
         music.setMusicTitle(musicRequest.getMusicTitle());
         music.setMusicUrl(musicRequest.getMusicUrl());
+        music.setPlaylist(playlist);
 
         return musicRepository.save(music);
     }

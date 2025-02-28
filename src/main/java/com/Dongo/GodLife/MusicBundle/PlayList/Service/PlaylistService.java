@@ -32,6 +32,12 @@ public class PlaylistService {
         return playlistRepository.findByUser(user, pageable);
     }
 
+
+    public Playlist getById(long playListId) {
+        return playlistRepository.findById(playListId)
+                .orElseThrow(() -> new EntityNotFoundException("PlayList not found with ID: " + playListId));
+    }
+
     public Playlist updatePlayList(long playListId,long user_id, PlaylistRequest playListRequest) throws NotYourPlaylistException {
         Optional<Playlist> optionalPlayList = playlistRepository.findById(playListId);
 
