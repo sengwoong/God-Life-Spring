@@ -33,6 +33,12 @@ public class AlarmController {
         User user = userService.CheckUserAndGetUser(user_id);
         Schedule schedule = scheduleService.getScheduleById(schedule_id);
         
+        // 사용자의 알람 개수 확인
+        List<Alarm> userAlarms = alarmService.getAlarmsByUserId(user_id);
+        if (userAlarms.size() >= 5) {
+            return ResponseEntity.badRequest().body("알람은 최대 5개까지만 생성 가능합니다.");
+        }
+        
         System.out.println(alarmRequest);
         Alarm alarm = alarmService.createAlarm(alarmRequest, schedule, user);
         return ResponseEntity.ok(alarm);
