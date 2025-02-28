@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/alarms")
@@ -24,12 +26,13 @@ public class AlarmController {
     private final ScheduleService scheduleService;
 
     @PostMapping("/schedule/{schedule_id}/users/{user_id}")
-    public ResponseEntity<Alarm> createAlarm(
+    public ResponseEntity<?> createAlarm(
             @PathVariable(name = "schedule_id") long schedule_id,
             @PathVariable(name = "user_id") long user_id,
             @RequestBody AlarmRequest alarmRequest) {
         User user = userService.CheckUserAndGetUser(user_id);
         Schedule schedule = scheduleService.getScheduleById(schedule_id);
+        
         System.out.println(alarmRequest);
         Alarm alarm = alarmService.createAlarm(alarmRequest, schedule, user);
         return ResponseEntity.ok(alarm);
@@ -59,5 +62,13 @@ public class AlarmController {
         User user = userService.CheckUserAndGetUser(user_id);
         alarmService.deleteAlarm(user, alarm_id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users/{user_id}")
+    public ResponseEntity<List<Alarm>> getUserAlarms(
+            @PathVariable(name = "user_id") long user_id) {
+        User user = userService.CheckUserAndGetUser(user_id);
+        List<Alarm> alarms = alarmService.getAlarmsByUserId(user_id);
+        return ResponseEntity.ok(alarms);
     }
 }

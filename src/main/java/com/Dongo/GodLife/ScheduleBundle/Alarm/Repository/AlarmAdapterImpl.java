@@ -4,6 +4,7 @@ import com.Dongo.GodLife.ScheduleBundle.Alarm.Model.Alarm;
 import com.Dongo.GodLife.ScheduleBundle.Alarm.Service.AlarmPersistenceAdapter;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -30,5 +31,10 @@ public class AlarmAdapterImpl implements AlarmPersistenceAdapter {
     public Alarm delete(Alarm alarm) {
         alarmRepository.delete(alarm);
         return alarm;
+    }
+
+    @Override
+    public List<Alarm> findByUserId(long userId) {
+        return alarmRepository.findByUserId(userId);
     }
 }

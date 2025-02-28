@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import util.Validator;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -58,5 +59,9 @@ public class AlarmService {
         }
 
         alarmRepository.delete(alarm);
+    }
+
+    public List<Alarm> getAlarmsByUserId(long userId) {
+        return alarmRepository.findByUserId(userId);
     }
 }
