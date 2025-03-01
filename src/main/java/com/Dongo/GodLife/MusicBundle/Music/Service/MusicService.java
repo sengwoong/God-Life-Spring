@@ -62,4 +62,12 @@ public class MusicService {
 
         musicRepository.delete(music);
     }
+
+    public Music save(Music music) {
+        return musicRepository.save(music);
+    }
+
+    public Music saveMusic(Music music) {
+        return musicRepository.save(music);
+    }
 }

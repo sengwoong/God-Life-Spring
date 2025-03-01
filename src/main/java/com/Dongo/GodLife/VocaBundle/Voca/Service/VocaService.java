@@ -71,4 +71,12 @@ public class VocaService {
         Optional<Voca> voca = vocaRepository.findById(id);
         return voca.orElse(null);
     }
+
+    public Voca save(Voca voca) {
+        return vocaRepository.save(voca);
+    }
+
+    public Voca saveVoca(Voca voca) {
+        return vocaRepository.save(voca);
+    }
 }

@@ -80,7 +80,6 @@ public class PlaylistService {
         return playlistRepository.save(playlist);
     }
     
-    // 공유된 모든 플레이리스트 조회 메서드
     public Page<Playlist> getAllSharedPlaylists(Pageable pageable) {
         return playlistRepository.findByIsSharedTrue(pageable);
     }

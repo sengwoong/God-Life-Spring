@@ -1,6 +1,7 @@
 package com.Dongo.GodLife.VocaBundle.Voca.Model;
 import com.Dongo.GodLife.User.Model.User;
 import com.Dongo.GodLife.VocaBundle.Word.Model.Word;
+import com.Dongo.GodLife.PostBundle.Post.Model.Post;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,4 +32,8 @@ public class Voca {
     @OneToMany(mappedBy = "voca", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Word> words;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = true)
+    private Post post;
 }
