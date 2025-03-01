@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
     Page<Playlist> findByUser(User user, Pageable pageable);  // 사용자 ID로 페이지네이션
+    
+    Page<Playlist> findByIsSharedTrue(Pageable pageable);
 }

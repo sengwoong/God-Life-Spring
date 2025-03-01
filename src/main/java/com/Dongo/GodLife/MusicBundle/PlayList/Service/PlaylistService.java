@@ -64,4 +64,24 @@ public class PlaylistService {
         }
         playlistRepository.delete(playlist);
     }
+
+    // 플레이리스트 공유 상태 토글 메서드
+    public Playlist toggleSharePlaylist(Long playlistId, Long userId) throws NotYourPlaylistException {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new EntityNotFoundException("플레이리스트를 찾을 수 없습니다: " + playlistId));
+        
+        if (!playlist.getUser().getId().equals(userId)) {
+            throw new NotYourPlaylistException("접근 거부: 사용자는 이 플레이리스트의 소유자가 아닙니다");
+        }
+        
+        // 공유 상태 토글
+        playlist.setShared(!playlist.isShared());
+        
+        return playlistRepository.save(playlist);
+    }
+    
+    // 공유된 모든 플레이리스트 조회 메서드
+    public Page<Playlist> getAllSharedPlaylists(Pageable pageable) {
+        return playlistRepository.findByIsSharedTrue(pageable);
+    }
 }

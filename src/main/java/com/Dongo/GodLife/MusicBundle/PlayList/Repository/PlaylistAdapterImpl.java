@@ -44,4 +44,9 @@ public class PlaylistAdapterImpl implements PlaylistPersistenceAdapter {
         playlistRepository.delete(playlist);
         return playlist;
     }
+
+    @Override
+    public Page<Playlist> findByIsSharedTrue(Pageable pageable) {
+        return playlistRepository.findByIsSharedTrue(pageable);
+    }
 }

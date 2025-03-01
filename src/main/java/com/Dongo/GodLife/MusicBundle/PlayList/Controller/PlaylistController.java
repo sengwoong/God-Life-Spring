@@ -14,6 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/playlists")
 @RequiredArgsConstructor
@@ -56,5 +59,28 @@ public class PlaylistController {
         userService.CheckUserAndGetUser(userId);
         playlistService.deletePlaylist(playlistId, userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{playlist_id}/share")
+    public ResponseEntity<Map<String, Object>> toggleSharePlaylist(
+            @PathVariable(name = "playlist_id") Long playlistId,
+            @RequestParam(name = "user_id") Long userId) throws NotYourPlaylistException {
+        
+        User user = userService.CheckUserAndGetUser(userId);
+        Playlist playlist = playlistService.toggleSharePlaylist(playlistId, userId);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("data", playlist);
+        response.put("message", playlist.isShared() ? 
+                "플레이리스트가 공유되었습니다." : "플레이리스트 공유가 취소되었습니다.");
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/shared")
+    public ResponseEntity<Page<Playlist>> getSharedPlaylists(Pageable pageable) {
+        Page<Playlist> sharedPlaylists = playlistService.getAllSharedPlaylists(pageable);
+        return ResponseEntity.ok(sharedPlaylists);
     }
 }
