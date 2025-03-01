@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 public class MusicService {
     private final MusicPersistenceAdapter musicRepository;
 
-
     public Music createMusic(MusicRequest musicRequest, Playlist playlist) {
 
         Music music = new Music();
@@ -31,6 +30,12 @@ public class MusicService {
 
     public Page<Music> getAllMusicByPlaylist(long playlistId, Pageable pageable) {
         return musicRepository.findPlaylistMusics(playlistId,pageable);
+    }
+
+
+    public Music getMusicById(long musicId) {
+        return musicRepository.findById(musicId)
+                .orElseThrow(() -> new EntityNotFoundException("Music not found with id: " + musicId));
     }
 
     public Music updateMusic(long musicId, User user, MusicRequest musicRequest) {

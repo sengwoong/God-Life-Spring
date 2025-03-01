@@ -33,7 +33,7 @@ public class MusicController {
         if (!playlist.getUser().getId().equals(user.getId())) {
             throw new NotYourPlaylistException("Access denied: User does not own the playlist");
         }
-        Music createdMusic = musicService.createMusic(musicRequest);
+        Music createdMusic = musicService.createMusic(musicRequest,playlist);
         
         return ResponseEntity.ok(createdMusic);
     }
