@@ -157,4 +157,9 @@ public class PostService {
     public Page<Post> getAdvertisementPosts(Pageable pageable) {
         return postRepository.findByIsAdvertisementTrue(pageable);
     }
+
+    @Transactional
+    public Post save(Post post) {
+        return postRepository.save(post);
+    }
 } 
