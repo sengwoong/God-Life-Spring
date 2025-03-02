@@ -87,7 +87,7 @@ public class ReviewService {
     
     @Transactional(readOnly = true)
     public Page<Review> getReviewsByPost(Long postId, Pageable pageable) {
-        Post post = postService.getPostById(postId);
+        Post post = postService.getById(postId);
         return reviewRepository.findByPost(post, pageable);
     }
     
@@ -100,7 +100,7 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public Review getUserReviewForPost(Long postId, Long userId) {
         User user = userService.CheckUserAndGetUser(userId);
-        Post post = postService.getPostById(postId);
+        Post post = postService.getById(postId);
         
         return reviewRepository.findByUserAndPost(user, post)
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시물에 대한 리뷰를 찾을 수 없습니다."));
@@ -109,10 +109,10 @@ public class ReviewService {
     private void updatePostAverageRating(Post post) {
         Double averageRating = reviewRepository.getAverageRatingByPost(post);
         if (averageRating != null) {
-            post.setAverageRating(averageRating);
+            post.updateRating(averageRating);
             postService.save(post);
         } else {
-            post.setAverageRating(0.0);
+            post.updateRating(0.0);
             postService.save(post);
         }
     }

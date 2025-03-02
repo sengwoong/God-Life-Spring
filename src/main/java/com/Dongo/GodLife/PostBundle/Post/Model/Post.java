@@ -54,6 +54,8 @@ public class Post {
     
     private boolean isAdvertisement;
     
+    private Double rating;
+    
     @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = false)
     @JsonIgnore
     private List<Music> musicList = new ArrayList<>();
@@ -68,9 +70,14 @@ public class Post {
         this.price = 0.0;
         this.sale = false;
         this.isShared = false;
+        this.rating = 0.0;
     }
     
     public enum PostType {
         MUSIC, NORMAL, VOCA
+    }
+
+    public void updateRating(Double rating) {
+        this.rating = rating;
     }
 } 
