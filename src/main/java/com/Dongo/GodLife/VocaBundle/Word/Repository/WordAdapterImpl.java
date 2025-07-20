@@ -33,22 +33,22 @@ public class WordAdapterImpl implements WordPersistenceAdapter {
     }
 
     @Override
-    public Page<Word> getAllWordsByVocaId(long vocaId, Pageable pageable) {
+    public Page<Word> getAllWordsByVocaId(Long vocaId, Pageable pageable) {
         return wordRepository.getAllWordsByVocaVocaId(vocaId, pageable);
     }
 
     @Override
-    public Optional<Word> findById(long wordId) {
+    public Optional<Word> findById(Long wordId) {
         return wordRepository.findById(wordId);
     }
 
     @Override
-    public Word delete(long wordId) throws NotYourWordException {
+    public Word delete(Long wordId)  {
 
         Optional<Word> word = wordRepository.findById(wordId);
 
         if (word.isEmpty()) {
-            throw new NotYourWordException("Word not found");
+            return null;
         }
 
         wordRepository.deleteById(wordId);

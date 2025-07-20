@@ -1,5 +1,6 @@
 package com.Dongo.GodLife.VocaBundle.Word.Service;
 
+import com.Dongo.GodLife.User.Model.User;
 import com.Dongo.GodLife.VocaBundle.Voca.Model.Voca;
 import com.Dongo.GodLife.VocaBundle.Voca.Service.VocaPersistenceAdapter;
 import com.Dongo.GodLife.VocaBundle.Word.Dto.WordRequest;
@@ -34,17 +35,17 @@ public class WordService {
         return wordRepository.save(word);
     }
 
-    public Page<Word> getAllwordsByVocaId(long vocaId, Pageable pageable) {
+    public Page<Word> getAllwordsByVocaId(Long vocaId, Pageable pageable) {
         return wordRepository.getAllWordsByVocaId(vocaId, pageable);
     }
 
-    public Word updateWord(long wordId,long userId, WordRequest wordRequest) throws NotYourWordException {
+    public Word updateWord(Long wordId, WordRequest wordRequest, User user) throws NotYourWordException {
 
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new EntityNotFoundException("Word not found with id: " + wordId));
 
 
-        if(!word.getVoca().getUser().getId().equals(userId)){
+        if(!word.getVoca().getUser().getId().equals(user.getId())){
             throw new NotYourWordException("Access denied: User does not own the word");
         }
 
@@ -54,12 +55,12 @@ public class WordService {
         return wordRepository.save(word);
     }
 
-    public Word deleteWord(long wordId, long userId) throws NotYourWordException {
+    public Word deleteWord(Long wordId, User user) throws NotYourWordException {
 
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new EntityNotFoundException("Word not found with id: " + wordId));
 
-        if( !word.getVoca().getUser().getId().equals(userId)){
+        if( !word.getVoca().getUser().getId().equals(user.getId())){
             throw new NotYourWordException("Access denied: User does not own the word");
         }
         wordRepository.delete(wordId);
