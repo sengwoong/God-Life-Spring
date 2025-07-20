@@ -4,6 +4,7 @@ import com.Dongo.GodLife.ScheduleBundle.Schedule.Model.Schedule;
 import com.Dongo.GodLife.User.Model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,10 +23,12 @@ public class Alarm {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @NotNull
     private User user;
 
     @OneToOne(mappedBy = "alarm", fetch = FetchType.LAZY, optional = true)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @NotNull
     private Schedule schedule;
 
     @Column(nullable = false)

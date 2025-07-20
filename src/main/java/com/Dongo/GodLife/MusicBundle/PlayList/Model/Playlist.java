@@ -24,6 +24,7 @@ public class Playlist {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
+    @NotNull
     private User user;
 
     private String playlistTitle;

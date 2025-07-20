@@ -3,6 +3,7 @@ package com.Dongo.GodLife.VocaBundle.Word.Model;
 import com.Dongo.GodLife.VocaBundle.Voca.Model.Voca;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -23,6 +24,7 @@ public class Word {
     @ManyToOne()
     @JoinColumn(name = "voca_id", nullable = false)
     @JsonIgnore
+    @NotNull
     private Voca voca;
 
 }

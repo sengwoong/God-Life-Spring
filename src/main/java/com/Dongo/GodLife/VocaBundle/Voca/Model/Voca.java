@@ -3,6 +3,7 @@ import com.Dongo.GodLife.User.Model.User;
 import com.Dongo.GodLife.VocaBundle.Word.Model.Word;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
