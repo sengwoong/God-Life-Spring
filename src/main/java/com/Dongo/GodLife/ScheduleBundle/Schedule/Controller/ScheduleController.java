@@ -22,7 +22,7 @@ public class ScheduleController {
 
     @PostMapping("/user/{user_id}")
     public ResponseEntity<Schedule> createSchedule(
-            @PathVariable(name = "user_id") long user_id,
+            @PathVariable(name = "user_id") Long user_id,
             @RequestBody ScheduleRequest request) {
         User user = userService.CheckUserAndGetUser(user_id);
         return ResponseEntity.ok(scheduleService.createSchedule(request, user));
@@ -30,7 +30,7 @@ public class ScheduleController {
 
     @GetMapping("/user/{user_id}")
     public ResponseEntity<Page<Schedule>> getScheduleByVocaId(
-            @PathVariable(name = "user_id") long user_id,
+            @PathVariable(name = "user_id") Long user_id,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size) throws NotYourScheduleException {
         Pageable pageable = PageRequest.of(page, size);
@@ -39,20 +39,34 @@ public class ScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
+
+    @GetMapping("/schedule/{schedule_id}/user/{user_id}")
+    public ResponseEntity<Schedule> getScheduleById(@PathVariable(name = "schedule_id") Long schedule_id, @PathVariable(name = "user_id") Long user_id) throws NotYourScheduleException {
+        User user = userService.CheckUserAndGetUser(user_id);
+        
+        Schedule schedule = scheduleService.getScheduleById(schedule_id);
+        if(!schedule.getUser().getId().equals(user_id)){
+            throw new NotYourScheduleException("Access denied: User does not own the schedule");
+        }
+        return ResponseEntity.ok(schedule);
+    }
+
     @PutMapping("/schedule/{schedule_id}/user/{user_id}")
     public ResponseEntity<Schedule> updateSchedule(
-            @PathVariable(name = "schedule_id") long schedule_id,
-            @PathVariable(name = "user_id") long user_id,
+            @PathVariable(name = "schedule_id") Long schedule_id,
+            @PathVariable(name = "user_id") Long user_id,
             @RequestBody ScheduleRequest scheduleRequest) throws NotYourScheduleException {
-        Schedule updatedSchedule = scheduleService.updateSchedule(schedule_id, user_id, scheduleRequest);
+        User user = userService.CheckUserAndGetUser(user_id);
+        Schedule updatedSchedule = scheduleService.updateSchedule(schedule_id, scheduleRequest, user);
         return ResponseEntity.ok(updatedSchedule);
     }
 
     @DeleteMapping("/schedule/{schedule_id}/user/{user_id}")
     public ResponseEntity<Void> deleteSchedule(
-            @PathVariable(name = "user_id") long user_id,
-            @PathVariable(name = "schedule_id") long schedule_id) throws NotYourScheduleException {
-        scheduleService.deleteSchedule(user_id, schedule_id);
+            @PathVariable(name = "user_id") Long user_id,
+            @PathVariable(name = "schedule_id") Long schedule_id) throws NotYourScheduleException {
+        User user = userService.CheckUserAndGetUser(user_id);
+        scheduleService.deleteSchedule(schedule_id, user);
         return ResponseEntity.noContent().build();
     }
 }

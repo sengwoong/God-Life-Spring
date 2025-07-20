@@ -25,8 +25,8 @@ public class AlarmController {
 
     @PostMapping("/schedule/{schedule_id}/users/{user_id}")
     public ResponseEntity<Alarm> createAlarm(
-            @PathVariable(name = "schedule_id") long schedule_id,
-            @PathVariable(name = "user_id") long user_id,
+            @PathVariable(name = "schedule_id") Long schedule_id,
+            @PathVariable(name = "user_id") Long user_id,
             @RequestBody AlarmRequest alarmRequest) {
         User user = userService.CheckUserAndGetUser(user_id);
         Schedule schedule = scheduleService.getScheduleById(schedule_id);
@@ -35,29 +35,35 @@ public class AlarmController {
         return ResponseEntity.ok(alarm);
     }
 
-    @GetMapping("/alarm/{alarm_id}")
+    @GetMapping("/alarm/{alarm_id}/user/{user_id}")
     public ResponseEntity<Alarm> getAlarm(
-            @PathVariable(name = "alarm_id") long alarm_id) {
+            @PathVariable(name = "alarm_id") Long alarm_id,
+            @PathVariable(name = "user_id") Long user_id) throws NotYourAlarmException {
+        User user = userService.CheckUserAndGetUser(user_id);
         Alarm alarm = alarmService.getAlarmByID(alarm_id);
+        if(!alarm.getUser().getId().equals(user.getId())){
+            throw new NotYourAlarmException("Access denied: User does not own the alarm");
+        }
         return ResponseEntity.ok(alarm);
     }
 
     @PutMapping("/alarm/{alarm_id}/user/{user_id}")
     public ResponseEntity<Alarm> updateAlarm(
-            @PathVariable(name = "alarm_id") long alarm_id,
-            @PathVariable(name = "user_id") long user_id,
+            @PathVariable(name = "alarm_id") Long alarm_id,
+            @PathVariable(name = "user_id") Long user_id,
             @RequestBody AlarmRequest alarmRequest) throws NotYourAlarmException {
-        Alarm updatedAlarm = alarmService.updateAlarm(alarm_id, user_id, alarmRequest);
+        User user = userService.CheckUserAndGetUser(user_id);
+        Alarm updatedAlarm = alarmService.updateAlarm(alarm_id, alarmRequest, user);
         return ResponseEntity.ok(updatedAlarm);
     }
 
 
     @DeleteMapping("/alarm/{alarm_id}/user/{user_id}")
     public ResponseEntity<Void> deleteAlarm(
-            @PathVariable(name = "alarm_id") long alarm_id,
-            @RequestParam(name = "user_id") long user_id) throws NotYourAlarmException, NotYourScheduleException {
+            @PathVariable(name = "alarm_id") Long alarm_id,
+            @PathVariable(name = "user_id") Long user_id) throws NotYourAlarmException, NotYourScheduleException {
         User user = userService.CheckUserAndGetUser(user_id);
-        alarmService.deleteAlarm(user, alarm_id);
+        alarmService.deleteAlarm(alarm_id, user);
         return ResponseEntity.ok().build();
     }
 }

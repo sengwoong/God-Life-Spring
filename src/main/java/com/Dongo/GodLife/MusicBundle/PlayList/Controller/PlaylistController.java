@@ -41,10 +41,12 @@ public class PlaylistController {
 
 
     @GetMapping("/playlist/{playlist_id}/user/{user_id}")
-    public ResponseEntity<Playlist> getPlaylistById(@PathVariable(name = "playlist_id") Long playlistId, @PathVariable(name = "user_id") Long userId){
+    public ResponseEntity<Playlist> getPlaylistById(@PathVariable(name = "playlist_id") Long playlistId, @PathVariable(name = "user_id") Long userId) throws NotYourPlaylistException {
         User user = userService.CheckUserAndGetUser(userId);
         Playlist playlist = playlistService.getPlayListById(playlistId);
-        playlist.setUser(user);
+        if(!playlist.getUser().getId().equals(userId)){
+            throw new NotYourPlaylistException("Access denied: User does not own the playlist");
+        }
         return ResponseEntity.ok(playlist);
     }
 

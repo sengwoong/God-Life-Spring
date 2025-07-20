@@ -41,16 +41,16 @@ public class ScheduleService {
         return scheduleRepository.findByUser(user, pageable);
     }
 
-    public Schedule updateSchedule(long scheduleId, long userId , ScheduleRequest scheduleRequest) throws  NotYourScheduleException {
+    public Schedule updateSchedule(Long scheduleId, ScheduleRequest scheduleRequest, User user) throws  NotYourScheduleException {
 
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with ID: " + scheduleId));
 
         Validator.validateNotEmpty(scheduleRequest.getScheduleTitle(), "Schedule title cannot be empty");
-        Validator.validateNotEmpty(scheduleRequest.getScheduleTitle(), "Schedule StartTime cannot be empty");
-        Validator.validateNotEmpty(scheduleRequest.getScheduleTitle(), "Schedule EndTime cannot be empty");
+        Validator.validateNotEmpty(scheduleRequest.getStartTime().toString(), "Schedule StartTime cannot be empty");
+        Validator.validateNotEmpty(scheduleRequest.getEndTime().toString(), "Schedule EndTime cannot be empty");
 
-        if (!schedule.getUser().getId().equals(userId)) {
+        if (!schedule.getUser().getId().equals(user.getId())) {
             throw new NotYourScheduleException("Access denied: User does not own the schedule");
         }
 
@@ -60,10 +60,10 @@ public class ScheduleService {
         return scheduleRepository.save(schedule);
     }
 
-    public void deleteSchedule(long userId ,long scheduleId) throws  NotYourScheduleException {
+    public void deleteSchedule(Long scheduleId, User user) throws  NotYourScheduleException {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
-        if (!schedule.getUser().getId().equals(userId)) {
+        if (!schedule.getUser().getId().equals(user.getId())) {
             throw new NotYourScheduleException("Access denied: User does not own the schedule");
         }
         scheduleRepository.delete(schedule);
