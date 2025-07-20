@@ -3,6 +3,8 @@ package com.Dongo.GodLife.MusicBundle.Music.Controller;
 import com.Dongo.GodLife.MusicBundle.Music.Dto.MusicRequest;
 import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
 import com.Dongo.GodLife.MusicBundle.Music.Service.MusicService;
+import com.Dongo.GodLife.MusicBundle.PlayList.Model.Playlist;
+import com.Dongo.GodLife.MusicBundle.PlayList.Service.PlaylistService;
 import com.Dongo.GodLife.User.Model.User;
 import com.Dongo.GodLife.User.Service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +20,12 @@ public class MusicController {
 
     private final MusicService musicService;
     private final UserService userService;
+    private final PlaylistService playlistService;
 
     @PostMapping
-    public ResponseEntity<Music> createMusic(@RequestBody MusicRequest musicRequest) {
-        Music createdMusic = musicService.createMusic(musicRequest);
+    public ResponseEntity<Music> createMusic(@RequestBody MusicRequest musicRequest, @RequestParam Long playlistId) {
+        Playlist playlist = playlistService.getPlayListById(playlistId);
+        Music createdMusic = musicService.createMusic(musicRequest, playlist);
         return ResponseEntity.ok(createdMusic);
     }
 
@@ -50,5 +54,11 @@ public class MusicController {
         User user = userService.CheckUserAndGetUser(userId);
         musicService.deleteMusic(musicId, user);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/music/{music_id}")
+    public ResponseEntity<Music> getMusicById(@PathVariable(name = "music_id") Long musicId) {
+        Music music = musicService.getMusicById(musicId);
+        return ResponseEntity.ok(music);
     }
 } 

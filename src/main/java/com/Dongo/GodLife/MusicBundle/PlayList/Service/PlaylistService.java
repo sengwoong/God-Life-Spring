@@ -32,7 +32,7 @@ public class PlaylistService {
         return playlistRepository.findByUser(user, pageable);
     }
 
-    public Playlist updatePlayList(long playListId,long user_id, PlaylistRequest playListRequest) throws NotYourPlaylistException {
+    public Playlist updatePlayList(Long playListId,Long user_id, PlaylistRequest playListRequest) throws NotYourPlaylistException {
         Optional<Playlist> optionalPlayList = playlistRepository.findById(playListId);
 
         if (!optionalPlayList.isPresent()) {
@@ -50,12 +50,21 @@ public class PlaylistService {
         return playlistRepository.save(playlist);
     }
 
-    public void deletePlaylist(long postId,long userId) throws NotYourPlaylistException {
-        Playlist playlist = playlistRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("Playlist not found with id: " + postId));
+    public void deletePlayList(Long playListId,Long userId) throws NotYourPlaylistException {
+        Playlist playlist = playlistRepository.findById(playListId)
+                .orElseThrow(() -> new EntityNotFoundException("Playlist not found with id: " + playListId));
         if (!playlist.getUser().getId().equals(userId)) {
             throw new NotYourPlaylistException("Access denied: User does not own the playlist");
         }
         playlistRepository.delete(playlist);
+    }
+
+    public Playlist getPlayListById(Long playlistId) {
+        return playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new EntityNotFoundException("Playlist not found with id: " + playlistId));
+    }
+
+    public Playlist save(Playlist playlist) {
+        return playlistRepository.save(playlist);
     }
 }

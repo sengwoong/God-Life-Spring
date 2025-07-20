@@ -4,6 +4,7 @@ package com.Dongo.GodLife.MusicBundle.Music.Service;
 import com.Dongo.GodLife.MusicBundle.Music.Dto.MusicRequest;
 import com.Dongo.GodLife.MusicBundle.Music.Exception.NotYourMusicException;
 import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
+import com.Dongo.GodLife.MusicBundle.PlayList.Model.Playlist;
 import com.Dongo.GodLife.User.Model.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,20 +19,26 @@ public class MusicService {
     private final MusicPersistenceAdapter musicRepository;
 
 
-    public Music createMusic(MusicRequest musicRequest) {
+    public Music createMusic(MusicRequest musicRequest, Playlist playlist) {
 
         Music music = new Music();
         music.setMusicTitle(musicRequest.getMusicTitle());
         music.setMusicUrl(musicRequest.getMusicUrl());
+        music.setPlaylist(playlist);
 
         return musicRepository.save(music);
     }
 
-    public Page<Music> getAllMusicByPlaylist(long playlistId, Pageable pageable) {
+    public Music getMusicById(Long musicId) {
+        return musicRepository.findById(musicId)
+                .orElseThrow(() -> new EntityNotFoundException("Music not found with id: " + musicId));
+    }
+
+    public Page<Music> getAllMusicByPlaylist(Long playlistId, Pageable pageable) {
         return musicRepository.findPlaylistMusics(playlistId,pageable);
     }
 
-    public Music updateMusic(long musicId, User user, MusicRequest musicRequest) {
+    public Music updateMusic(Long musicId, User user, MusicRequest musicRequest) {
         Music music = musicRepository.findById(musicId)
                 .orElseThrow(() -> new EntityNotFoundException("Music not found with id: " + musicId));
 
@@ -45,7 +52,7 @@ public class MusicService {
         return musicRepository.save(music);
     }
 
-    public void deleteMusic(long musicId, User user) {
+    public void deleteMusic(Long musicId, User user) {
         Music music = musicRepository.findById(musicId)
                 .orElseThrow(() -> new EntityNotFoundException("Music not found with id: " + musicId));
 

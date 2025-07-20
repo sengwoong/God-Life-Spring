@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class PlaylistController {
     private final PlaylistService playlistService;
     private final UserService userService;
-
+   
     @PostMapping("/user/{user_id}")
     public ResponseEntity<Playlist> createPlaylist(
             @PathVariable(name = "user_id") Long userId,
@@ -39,6 +39,26 @@ public class PlaylistController {
         return ResponseEntity.ok(playlists);
     }
 
+
+    @GetMapping("/playlist/{playlist_id}/user/{user_id}")
+    public ResponseEntity<Playlist> getPlaylistById(@PathVariable(name = "playlist_id") Long playlistId, @PathVariable(name = "user_id") Long userId){
+        User user = userService.CheckUserAndGetUser(userId);
+        Playlist playlist = playlistService.getPlayListById(playlistId);
+        playlist.setUser(user);
+        return ResponseEntity.ok(playlist);
+    }
+
+    // @GetMapping("/playlist/{playlist_id}/share")
+    // public ResponseEntity<Playlist> getPlaylistShareById(@PathVariable(name = "playlist_id") Long playlistId){
+    //     // 공유 풀레이 리스트 단일일 조회
+    // }
+
+    // //유저의 공유 플레이리스트 전체조회
+    // @GetMapping("/share/user/{user_id}")
+    // public ResponseEntity<Page<Playlist>> getPlaylistShare(@PathVariable(name = "user_id") Long userId, Pageable pageable){
+    //    // 유저의 공유 플레이리스트 전체조회
+    // }
+
     @PutMapping("/playlist/{playlist_id}/user/{user_id}")
     public ResponseEntity<Playlist> updatePlaylist(
             @PathVariable(name = "playlist_id") Long playlistId,
@@ -54,7 +74,7 @@ public class PlaylistController {
             @PathVariable(name = "playlist_id") Long playlistId,
             @PathVariable(name = "user_id") Long userId) throws NotYourPlaylistException {
         userService.CheckUserAndGetUser(userId);
-        playlistService.deletePlaylist(playlistId, userId);
+        playlistService.deletePlayList(playlistId, userId);
         return ResponseEntity.noContent().build();
     }
 }

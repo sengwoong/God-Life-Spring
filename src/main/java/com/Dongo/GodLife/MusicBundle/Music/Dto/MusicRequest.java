@@ -16,5 +16,7 @@ public class MusicRequest {
     private String musicTitle;
 
     @NotBlank(message = "Music URL cannot be blank")
+    @Pattern(regexp = "^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w .-]*)*/?$", 
+             message = "올바른 음악 URL 형식이 아닙니다")
     private String musicUrl;
 }
