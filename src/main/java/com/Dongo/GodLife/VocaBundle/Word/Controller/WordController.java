@@ -2,6 +2,7 @@ package com.Dongo.GodLife.VocaBundle.Word.Controller;
 
 
 
+import com.Dongo.GodLife.User.Model.User;
 import com.Dongo.GodLife.User.Service.UserService;
 import com.Dongo.GodLife.VocaBundle.Word.Dto.WordRequest;
 import com.Dongo.GodLife.VocaBundle.Word.Exception.NotYourWordException;
@@ -41,8 +42,8 @@ public class WordController {
             @PathVariable(name = "user_id") Long userId,
             @PathVariable(name = "word_id") Long wordId,
             @RequestBody WordRequest wordRequest) throws NotYourWordException {
-        userService.CheckUserAndGetUser(userId);
-        Word updatedWord = wordService.updateWord(wordId, userId, wordRequest);
+        User user = userService.CheckUserAndGetUser(userId);
+        Word updatedWord = wordService.updateWord(wordId, wordRequest, user);
         return ResponseEntity.ok(updatedWord);
     }
 
@@ -50,8 +51,8 @@ public class WordController {
     public ResponseEntity<Void> deleteWord(
             @PathVariable(name = "user_id") Long userId,
             @PathVariable(name = "word_id") Long wordId) throws NotYourWordException {
-        userService.CheckUserAndGetUser(userId);
-        wordService.deleteWord(wordId, userId);
+        User user = userService.CheckUserAndGetUser(userId);
+        wordService.deleteWord(wordId, user);
         return ResponseEntity.noContent().build();
     }
 }

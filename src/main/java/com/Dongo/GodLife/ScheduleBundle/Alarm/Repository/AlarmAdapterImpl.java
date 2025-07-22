@@ -22,7 +22,7 @@ public class AlarmAdapterImpl implements AlarmPersistenceAdapter {
     }
 
     @Override
-    public Optional<Alarm> findById(long id) {
+    public Optional<Alarm> findById(Long id) {
         return alarmRepository.findById(id);
     }
 

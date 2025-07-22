@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WordRepository extends JpaRepository<Word, Long> {
     @Query("SELECT w FROM Word w WHERE w.voca.vocaId = :vocaId")
-    Page<Word> getAllWordsByVocaVocaId(@Param("vocaId") long vocaId, Pageable pageable);
+    Page<Word> getAllWordsByVocaVocaId(@Param("vocaId") Long vocaId, Pageable pageable);
 
 } 

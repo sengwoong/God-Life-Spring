@@ -29,7 +29,7 @@ public class ScheduleAdapterImpl implements SchedulePersistenceAdapter {
     }
 
     @Override
-    public Optional<Schedule> findById(long id) {
+    public Optional<Schedule> findById(Long id) {
         return scheduleRepository.findById(id);
     }
 
@@ -40,7 +40,6 @@ public class ScheduleAdapterImpl implements SchedulePersistenceAdapter {
 
     @Override
     public Schedule delete(Schedule schedule) {
-        // JpaRepository의 delete 메서드 사용
         scheduleRepository.delete(schedule);
         return schedule;
     }

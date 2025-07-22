@@ -29,7 +29,7 @@ public class VocaAdapterImpl implements VocaPersistenceAdapter {
     }
 
     @Override
-    public Optional<Voca> findById(long id) {
+    public Optional<Voca> findById(Long id) {
         return Optional.ofNullable(vocaRepository.findById(id).orElse(null));
     }
 

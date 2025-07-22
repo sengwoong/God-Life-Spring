@@ -26,12 +26,12 @@ public class MusicAdapterImpl implements MusicPersistenceAdapter {
     }
 
     @Override
-    public Page<Music> findPlaylistMusics(long musicId, Pageable pageable) {
+    public Page<Music> findPlaylistMusics(Long musicId, Pageable pageable) {
         return musicRepository.findAllByPlaylist_PlaylistId(musicId,pageable);
     }
 
     @Override
-    public Optional<Music> findById(long musicId) {
+    public Optional<Music> findById(Long musicId) {
         return musicRepository.findById(musicId);
     }
 

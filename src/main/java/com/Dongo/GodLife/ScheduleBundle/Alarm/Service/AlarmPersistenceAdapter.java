@@ -11,7 +11,7 @@ public interface AlarmPersistenceAdapter {
 
     Alarm save(Alarm alarm);
 
-    Optional<Alarm> findById(long alarmId);
+    Optional<Alarm> findById(Long alarmId);
 
     Alarm delete(Alarm alarm) throws NotYourScheduleException;
 }

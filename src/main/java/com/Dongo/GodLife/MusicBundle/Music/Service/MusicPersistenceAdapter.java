@@ -11,9 +11,9 @@ public interface MusicPersistenceAdapter {
 
     Music save(Music music);
 
-    Page<Music> findPlaylistMusics(long musicId, Pageable pageable);
+    Page<Music> findPlaylistMusics(Long musicId, Pageable pageable);
 
-    Optional<Music> findById(long musicId);
+    Optional<Music> findById(Long musicId);
 
     Music delete(Music music) throws NotYourMusicException;
 

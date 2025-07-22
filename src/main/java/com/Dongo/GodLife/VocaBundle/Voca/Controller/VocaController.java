@@ -26,7 +26,7 @@ public class VocaController {
 
     @PostMapping("/user/{user_id}")
     public ResponseEntity<Voca> createVoca(
-            @PathVariable(name = "user_id") long userId,
+            @PathVariable(name = "user_id") Long userId,
             @RequestBody @Valid VocaRequest vocaRequest) {
         User user = userService.CheckUserAndGetUser(userId);
         Voca voca = vocaService.createVoca(user, vocaRequest);
@@ -35,7 +35,7 @@ public class VocaController {
 
     @GetMapping("/user/{user_id}")
     public ResponseEntity<Page<Voca>> getVocasByUserId(
-            @PathVariable(name = "user_id") long userId,
+            @PathVariable(name = "user_id") Long userId,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
         User user = userService.CheckUserAndGetUser(userId);
@@ -45,8 +45,8 @@ public class VocaController {
 
     @PutMapping("/voca/{voca_id}/user/{user_id}")
     public ResponseEntity<Voca> updateVoca(
-            @PathVariable(name = "voca_id") long vocaId,
-            @PathVariable(name = "user_id") long userId,
+            @PathVariable(name = "voca_id") Long vocaId,
+            @PathVariable(name = "user_id") Long userId,
             @RequestBody @Valid VocaRequest vocaRequest) throws NotYourVocaException, VocaNotFoundException {
         User user = userService.CheckUserAndGetUser(userId);
         Voca updatedVoca = vocaService.updateVoca(vocaId, user, vocaRequest);
@@ -55,9 +55,10 @@ public class VocaController {
 
     @DeleteMapping("/voca/{voca_id}/user/{user_id}")
     public ResponseEntity<Void> deleteVoca(
-            @PathVariable(name = "voca_id") long vocaId,
-            @PathVariable(name = "user_id") long userId) throws NotYourVocaException {
-        vocaService.deleteVoca(vocaId, userId);
+            @PathVariable(name = "voca_id") Long vocaId,
+            @PathVariable(name = "user_id") Long userId) throws NotYourVocaException {
+        User user = userService.CheckUserAndGetUser(userId);
+        vocaService.deleteVoca(vocaId, user)    ;
         return ResponseEntity.noContent().build();
     }
 }

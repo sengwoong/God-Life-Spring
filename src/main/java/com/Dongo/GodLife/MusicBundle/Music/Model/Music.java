@@ -17,12 +17,6 @@ public class Music {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long musicId;
-    
-    
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "playlist_id", nullable = true)
-    private Playlist playlist;
 
     @NotBlank
     private String musicTitle;
@@ -33,4 +27,16 @@ public class Music {
     @Column(name = "music_url")
     private String musicUrl;
 
+    @NotBlank
+    private String imageUrl;
+
+    @Builder.Default
+    @NotBlank
+    private String color = "#000000";
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "playlist_id", nullable = true)
+    private Playlist playlist;
 }
+    

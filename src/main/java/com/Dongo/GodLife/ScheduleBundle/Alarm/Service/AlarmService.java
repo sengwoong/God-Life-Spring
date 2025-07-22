@@ -28,19 +28,19 @@ public class AlarmService {
         return alarmRepository.save(alarm);
     }
 
-    public Alarm getAlarmByID(long alarmId ) {
+    public Alarm getAlarmByID(Long alarmId ) {
         return alarmRepository.findById(alarmId)
                 .orElseThrow(() -> new NoSuchElementException("Alarm not found with ID: " + alarmId));
     }
 
-    public Alarm updateAlarm(long alarmId,long userId , AlarmRequest alarmRequest) throws NotYourAlarmException {
+    public Alarm updateAlarm(Long alarmId, AlarmRequest alarmRequest, User user) throws NotYourAlarmException {
 
         Alarm alarm = alarmRepository.findById(alarmId)
                 .orElseThrow(() -> new EntityNotFoundException("Alarm not found with ID: " + alarmId));
 
         Validator.validateNotEmpty(alarmRequest.getAlarmTitle(), "Alarm title cannot be empty");
         Validator.validateNotEmpty(alarmRequest.getAlarmContent(), "Alarm content cannot be empty");
-        if (!alarm.getUser().getId().equals(userId)) {
+        if (!alarm.getUser().getId().equals(user.getId())) {
             throw new NotYourAlarmException("Access denied: User does not own the alarm");
         }
         alarm.setAlarmTitle(alarmRequest.getAlarmTitle());
@@ -49,11 +49,11 @@ public class AlarmService {
         return alarmRepository.save(alarm);
     }
 
-    public void deleteAlarm(User user, long alarmId) throws NotYourAlarmException, NotYourScheduleException {
+    public void deleteAlarm(Long alarmId, User user) throws NotYourAlarmException, NotYourScheduleException {
         Alarm alarm = alarmRepository.findById(alarmId)
                 .orElseThrow(() -> new IllegalArgumentException("Alarm not found with id: " + alarmId));
 
-        if (!alarm.getUser().equals(user)) {
+        if (!alarm.getUser().getId().equals(user.getId()    )) {
             throw new NotYourAlarmException("Access denied: User does not own the alarm");
         }
 

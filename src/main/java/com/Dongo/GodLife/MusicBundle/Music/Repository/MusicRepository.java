@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface MusicRepository extends JpaRepository<Music, Long> {
-    Page<Music> findAllByPlaylist_PlaylistId(long playlistId, Pageable pageable);
+    Page<Music> findAllByPlaylist_PlaylistId(Long playlistId, Pageable pageable);
 }
 

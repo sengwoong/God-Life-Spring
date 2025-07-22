@@ -28,20 +28,20 @@ public class UserController {
 
     @GetMapping("user/{user_id}")
     public ResponseEntity<UserResponse> getUserById(
-            @PathVariable(name = "user_id") long user_id) {
+            @PathVariable(name = "user_id") Long user_id) {
         return ResponseEntity.ok(userService.getUserByUserDetail(user_id));
     }
 
     @PutMapping("user/{user_id}")
     public ResponseEntity<UpdateUserRequest> updateUser(
-            @PathVariable(name = "user_id") long user_id,
+            @PathVariable(name = "user_id") Long user_id,
             @RequestBody UpdateUserRequest user) {
         return ResponseEntity.ok(userService.updateUser(user_id, user));
     }
 
     @DeleteMapping("user/{user_id}")
     public ResponseEntity<Void> deleteUser(
-            @PathVariable(name = "user_id") long user_id) {
+            @PathVariable(name = "user_id") Long user_id) {
         userService.deleteUser(user_id);
         return ResponseEntity.noContent().build();
     }

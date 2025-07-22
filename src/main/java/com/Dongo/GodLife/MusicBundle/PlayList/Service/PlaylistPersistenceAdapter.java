@@ -15,8 +15,8 @@ public interface PlaylistPersistenceAdapter {
 
     Page<Playlist> findByUser(User user, Pageable pageable);
 
-    Optional<Playlist> findById(long playListId);
+    Optional<Playlist> findById(Long playListId);
 
     Playlist delete(Playlist playList) throws NotYourPlaylistException;
-}
+}   
 

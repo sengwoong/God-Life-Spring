@@ -27,19 +27,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User CheckUserAndGetUser(long Id) {
+    public User CheckUserAndGetUser(Long Id) {
         return userRepository.findById(Id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with Id: " + Id));
     }
 
 
-    public UserResponse getUserByUserDetail(long Id) {
+    public UserResponse getUserByUserDetail(Long Id) {
         User user = userRepository.findById(Id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with Id: " + Id));
         return new UserResponse(user);
     }
 
-    public UpdateUserRequest updateUser(long Id, UpdateUserRequest request) {
+    public UpdateUserRequest updateUser(Long Id, UpdateUserRequest request) {
         User user = userRepository.findById(Id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + Id));
 
@@ -52,7 +52,7 @@ public class UserService {
         return new UpdateUserRequest(updatedUser);
     }
 
-    public void deleteUser(long Id) {
+    public void deleteUser(Long Id) {
         User user = CheckUserAndGetUser(Id);
         userRepository.delete(Id);
     }

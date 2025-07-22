@@ -12,7 +12,7 @@ public interface SchedulePersistenceAdapter {
 
     Schedule save(Schedule schedule);
 
-    Optional<Schedule> findById(long ScheduleId);
+    Optional<Schedule> findById(Long ScheduleId);
 
     Page<Schedule> findByUser(User user, Pageable pageable) throws NotYourScheduleException;
 

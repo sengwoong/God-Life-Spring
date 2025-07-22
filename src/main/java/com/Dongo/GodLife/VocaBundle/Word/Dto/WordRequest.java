@@ -15,14 +15,14 @@ public class WordRequest {
 
     @NotNull(message = "Word is required")
     @Size(min = 1, max = 255, message = "Word cannot be empty")
-    private String word;  // 단어
+    private String word;
 
     @NotNull(message = "Meaning is required")
     @Size(min = 1, max = 500, message = "Meaning cannot be empty")
-    private String meaning;  // 의미
+    private String meaning; 
 
     @NotNull(message = "Voca ID is required")
-    private long vocaId;  // 보카 아이디
+    private Long vocaId;
 }
 
 

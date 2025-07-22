@@ -31,7 +31,7 @@ public class PlaylistAdapterImpl implements PlaylistPersistenceAdapter {
     }
 
     @Override
-    public Optional<Playlist> findById(long playlistId) {
+    public Optional<Playlist> findById(Long playlistId) {
         return playlistRepository.findById(playlistId);
     }
 
