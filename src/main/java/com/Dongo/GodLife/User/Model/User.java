@@ -35,7 +35,16 @@ public class User {
     private String address;
     private String profileImage;
     private String bio;
-    private String level;
+    
+    @Builder.Default
+    private Integer level = 1;
+    
+    @Builder.Default
+    private Integer followers = 0;
+    
+    @Builder.Default
+    private Integer following = 0;
+    
     private int sales;
     private LocalDateTime createdAt;
 

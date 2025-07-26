@@ -18,4 +18,6 @@ public interface VocaPersistenceAdapter  {
     @Nullable Optional<Voca> findById(@NotNull Long id);
 
     Voca delete(Voca voca);
+
+    @Nullable Page<Voca> findByIsShared(@NotNull Boolean isShared, Pageable pageable);
 }

@@ -36,11 +36,12 @@ public class PlaylistAdapterImpl implements PlaylistPersistenceAdapter {
     }
 
     @Override
-    public Playlist delete(Playlist playlist) throws NotYourPlaylistException {
+    public Page<Playlist> findByIsShared(Boolean isShared, Pageable pageable) {
+        return playlistRepository.findByIsShared(isShared, pageable);
+    }
 
-        if (playlist == null) {
-            throw new NotYourPlaylistException("Playlist cannot be null");
-        }
+    @Override
+    public Playlist delete(Playlist playlist){
         playlistRepository.delete(playlist);
         return playlist;
     }

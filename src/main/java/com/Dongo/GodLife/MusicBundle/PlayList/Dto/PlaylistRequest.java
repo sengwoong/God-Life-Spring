@@ -6,9 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class PlaylistRequest {
+
     @NotBlank(message = "Playlist title cannot be blank")
     private String playListTitle;
 }

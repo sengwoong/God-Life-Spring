@@ -1,9 +1,7 @@
 package com.Dongo.GodLife.ScheduleBundle.Schedule.Model;
 
-import com.Dongo.GodLife.ScheduleBundle.Alarm.Model.Alarm;
 import com.Dongo.GodLife.User.Model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,16 +23,22 @@ public class Schedule {
 
     @NotBlank
     @Column(nullable = false)
-    private String scheduleTitle;
+    private String title;
 
-    @Column(name = "start_time")
-    private LocalDateTime startTime;
+    @Column(name = "content")
+    private String content;
 
-    @Column(name = "end_time")
-    private LocalDateTime endTime;
+    @Column(name = "time")
+    private String time;
+
+    @Column(name = "day")
+    private String day;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "has_alarm")
+    private boolean hasAlarm;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,7 +46,5 @@ public class Schedule {
     @JsonIgnore
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = true)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Alarm alarm;
+ 
 }

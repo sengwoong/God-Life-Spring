@@ -36,6 +36,43 @@ public class VocaService {
     public Page<Voca> getAllVocasByUserId(User user, Pageable pageable) {
         return vocaRepository.findByUser(user, pageable);
     }
+    public Voca shareVoca(Long vocaId, User user, VocaRequest vocaRequest) throws NotYourVocaException, VocaNotFoundException {
+        Optional<Voca> optionalVoca = vocaRepository.findById(vocaId);
+        if (!optionalVoca.isPresent()) {
+            throw new VocaNotFoundException("Voca not found");
+        }
+        Voca voca = optionalVoca.get();
+        
+        Validator.validateNotEmpty(vocaRequest.getVocaTitle(), "Voca title cannot be empty");
+        Validator.validateNotEmpty(vocaRequest.getDescription(), "Voca description cannot be empty");
+
+        if (!voca.getUser().getId().equals(user.getId())) {
+            throw new NotYourVocaException("Access denied: User does not own the voca");
+        }
+
+        voca.setDescription(vocaRequest.getDescription());
+        voca.setVocaTitle(vocaRequest.getVocaTitle());
+        voca.setIsShared(!voca.getIsShared()); // toggle 공유 상태
+        voca.setUser(user);
+        return vocaRepository.save(voca);
+    }
+
+    // 구매한 단어장 조회 메서드 추가
+    public Page<Voca> getPurchasedVocasByUserId(User user, Pageable pageable) {
+        System.out.println("getPurchasedVocasByUserId 를 호출함");
+        return vocaRepository.findByUser(user, pageable);
+    }
+
+    // 학습할 단어장 조회 메서드 추가
+    public Page<Voca> getStudyVocasByUserId(User user, Pageable pageable) {
+        System.out.println("getStudyVocasByUserId 를 호출함");
+            return vocaRepository.findByUser(user, pageable);
+    }
+
+  
+    public Page<Voca> getSharedVocasByUserId(User user, Pageable pageable) {
+        return vocaRepository.findByIsShared(true, pageable);
+    }
 
     public Voca updateVoca(Long vocaId,User user, VocaRequest vocaRequest) throws NotYourVocaException, VocaNotFoundException {
 

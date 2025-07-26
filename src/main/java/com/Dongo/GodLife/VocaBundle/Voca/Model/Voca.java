@@ -30,6 +30,9 @@ public class Voca {
 
     private String description;
     private LocalDateTime createdAt;
+    
+    @Builder.Default
+    private Boolean isShared = false;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

@@ -19,14 +19,12 @@ public class ScheduleService {
     private final  SchedulePersistenceAdapter scheduleRepository;
 
     public Schedule createSchedule(ScheduleRequest request, User user) {
-
-        if (request.getStartTime().isAfter(request.getEndTime())) {
-            throw new IllegalArgumentException("Start time must be before or equal to end time");
-        }
         Schedule schedule = new Schedule();
-        schedule.setScheduleTitle(request.getScheduleTitle());
-        schedule.setStartTime(request.getStartTime());
-        schedule.setEndTime(request.getEndTime());
+        schedule.setTitle(request.getScheduleTitle());
+        schedule.setContent(request.getContent());
+        schedule.setTime(request.getStartTime());
+        schedule.setDay(request.getDay());
+        schedule.setHasAlarm(request.isHasAlarm());
         schedule.setUser(user);
         
         return scheduleRepository.save(schedule);
@@ -47,16 +45,18 @@ public class ScheduleService {
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with ID: " + scheduleId));
 
         Validator.validateNotEmpty(scheduleRequest.getScheduleTitle(), "Schedule title cannot be empty");
-        Validator.validateNotEmpty(scheduleRequest.getStartTime().toString(), "Schedule StartTime cannot be empty");
-        Validator.validateNotEmpty(scheduleRequest.getEndTime().toString(), "Schedule EndTime cannot be empty");
+        Validator.validateNotEmpty(scheduleRequest.getStartTime(), "Schedule StartTime cannot be empty");
+        Validator.validateNotEmpty(scheduleRequest.getEndTime(), "Schedule EndTime cannot be empty");
 
         if (!schedule.getUser().getId().equals(user.getId())) {
             throw new NotYourScheduleException("Access denied: User does not own the schedule");
         }
 
-        schedule.setScheduleTitle(scheduleRequest.getScheduleTitle());
-        schedule.setStartTime(scheduleRequest.getStartTime());
-        schedule.setEndTime(scheduleRequest.getEndTime());
+        schedule.setTitle(scheduleRequest.getScheduleTitle());
+        schedule.setContent(scheduleRequest.getContent());
+        schedule.setTime(scheduleRequest.getStartTime());
+        schedule.setDay(scheduleRequest.getDay());
+        schedule.setHasAlarm(scheduleRequest.isHasAlarm());
         return scheduleRepository.save(schedule);
     }
 

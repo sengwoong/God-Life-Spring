@@ -18,5 +18,7 @@ public interface PlaylistPersistenceAdapter {
     Optional<Playlist> findById(Long playListId);
 
     Playlist delete(Playlist playList) throws NotYourPlaylistException;
+
+    Page<Playlist> findByIsShared(Boolean isShared, Pageable pageable);
 }   
 

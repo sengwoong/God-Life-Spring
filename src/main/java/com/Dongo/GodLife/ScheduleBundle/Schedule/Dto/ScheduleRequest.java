@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -17,23 +18,17 @@ public class ScheduleRequest {
     @Size(max = 255, message = "Schedule title must be 255 characters or less")
     private String scheduleTitle;
 
-    @NotNull(message = "Start time cannot be null")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @FutureOrPresent(message = "Start time must be in the present or future")
-    @YearRange(message = "Start time must be between 2000 and 2100")
-    private LocalDateTime startTime;
+    @NotBlank(message = "Content cannot be blank")
+    private String content;
 
-    @NotNull(message = "End time cannot be null")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @Future(message = "End time must be in the future")
-    @YearRange(message = "End time must be between 2000 and 2100")
-    private LocalDateTime endTime;
+    @NotBlank(message = "Start time cannot be blank")
+    private String startTime;
 
-    @AssertTrue(message = "Start time must be before or equal to end time")
-    public boolean isStartTimeBeforeOrEqualEndTime() {
-        if (startTime == null || endTime == null) {
-            return true; // 다른 검증에서 null 여부를 처리함
-        }
-        return !startTime.isAfter(endTime);
-    }
+    @NotBlank(message = "End time cannot be blank")
+    private String endTime;
+
+    @NotBlank(message = "Day cannot be blank")
+    private String day;
+
+    private boolean hasAlarm = false;
 }

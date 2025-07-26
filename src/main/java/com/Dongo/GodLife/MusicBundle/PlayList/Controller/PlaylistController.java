@@ -50,16 +50,6 @@ public class PlaylistController {
         return ResponseEntity.ok(playlist);
     }
 
-    // @GetMapping("/playlist/{playlist_id}/share")
-    // public ResponseEntity<Playlist> getPlaylistShareById(@PathVariable(name = "playlist_id") Long playlistId){
-    //     // 공유 풀레이 리스트 단일일 조회
-    // }
-
-    // //유저의 공유 플레이리스트 전체조회
-    // @GetMapping("/share/user/{user_id}")
-    // public ResponseEntity<Page<Playlist>> getPlaylistShare(@PathVariable(name = "user_id") Long userId, Pageable pageable){
-    //    // 유저의 공유 플레이리스트 전체조회
-    // }
 
     @PutMapping("/playlist/{playlist_id}/user/{user_id}")
     public ResponseEntity<Playlist> updatePlaylist(
@@ -71,6 +61,7 @@ public class PlaylistController {
         return ResponseEntity.ok(updatedPlaylist);
     }
 
+
     @DeleteMapping("/playlist/{playlist_id}/user/{user_id}")
     public ResponseEntity<Void> deletePlaylist(
             @PathVariable(name = "playlist_id") Long playlistId,
@@ -79,4 +70,27 @@ public class PlaylistController {
         playlistService.deletePlayList(playlistId, userId);
         return ResponseEntity.noContent().build();
     }
+
+
+    
+
+
+     
+     @GetMapping("/share/user/{user_id}")
+     public ResponseEntity<Page<Playlist>> sharePlaylist(@PathVariable(name = "user_id") Long userId, Pageable pageable){
+        User user = userService.CheckUserAndGetUser(userId);
+        Page<Playlist> playlists = playlistService.getSharedPlaylistsByUserId(user, pageable);
+        return ResponseEntity.ok(playlists);
+    }
+
+    @PutMapping("/share/{playlist_id}/user/{user_id}")
+    public ResponseEntity<Playlist> sharePlaylist(
+            @PathVariable(name = "playlist_id") Long playlistId,
+            @PathVariable(name = "user_id") Long userId,
+            @RequestBody PlaylistRequest playlistRequest) throws NotYourPlaylistException {
+        User user = userService.CheckUserAndGetUser(userId);
+        Playlist updatedPlaylist = playlistService.sharePlaylist(playlistId, userId, playlistRequest);
+        return ResponseEntity.ok(updatedPlaylist);
+    }
+
 }

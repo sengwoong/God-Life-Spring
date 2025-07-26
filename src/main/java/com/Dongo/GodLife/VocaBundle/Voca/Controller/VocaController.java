@@ -43,6 +43,34 @@ public class VocaController {
         return ResponseEntity.ok(vocas);
     }
 
+    // 미구현
+    @GetMapping("/purchased/{user_id}")
+    public ResponseEntity<Page<Voca>> getPurchasedVocasByUserId(
+            @PathVariable(name = "user_id") Long userId,
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        User user = userService.CheckUserAndGetUser(userId);
+        Page<Voca> vocas = vocaService.getPurchasedVocasByUserId(user, pageable);
+        return ResponseEntity.ok(vocas);
+    }
+
+    // 미구현
+    @GetMapping("/study/{user_id}")
+    public ResponseEntity<Page<Voca>> getStudyVocasByUserId(
+            @PathVariable(name = "user_id") Long userId,
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        User user = userService.CheckUserAndGetUser(userId);
+        Page<Voca> vocas = vocaService.getStudyVocasByUserId(user, pageable);
+        return ResponseEntity.ok(vocas);
+    }
+
+    @GetMapping("/voca/{voca_id}")
+    public ResponseEntity<Voca> getVocaById(@PathVariable(name = "voca_id") Long vocaId) {
+        Voca voca = vocaService.findById(vocaId);
+        return ResponseEntity.ok(voca);
+    }
+
     @PutMapping("/voca/{voca_id}/user/{user_id}")
     public ResponseEntity<Voca> updateVoca(
             @PathVariable(name = "voca_id") Long vocaId,
@@ -58,7 +86,27 @@ public class VocaController {
             @PathVariable(name = "voca_id") Long vocaId,
             @PathVariable(name = "user_id") Long userId) throws NotYourVocaException {
         User user = userService.CheckUserAndGetUser(userId);
-        vocaService.deleteVoca(vocaId, user)    ;
+        vocaService.deleteVoca(vocaId, user);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/share/{user_id}")
+    public ResponseEntity<Page<Voca>> shareVoca(
+            @PathVariable(name = "user_id") Long userId,
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        User user = userService.CheckUserAndGetUser(userId);
+        Page<Voca> vocas = vocaService.getSharedVocasByUserId(user, pageable);
+        return ResponseEntity.ok(vocas);
+    }
+    
+    @PutMapping("/share/{voca_id}/user/{user_id}")
+    public ResponseEntity<Voca> shareVoca(
+            @PathVariable(name = "voca_id") Long vocaId,
+            @PathVariable(name = "user_id") Long userId,
+            @RequestBody VocaRequest vocaRequest) throws NotYourVocaException, VocaNotFoundException {
+        User user = userService.CheckUserAndGetUser(userId);
+        Voca updatedVoca = vocaService.shareVoca(vocaId, user, vocaRequest);
+        return ResponseEntity.ok(updatedVoca);
     }
 }
