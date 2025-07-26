@@ -18,11 +18,6 @@ public class MusicLikeController {
     private final MusicLikeService musicLikeService;
 
    
-    @PostMapping("/{musicId}/user/{userId}")
-    public ResponseEntity<MusicLike> addLike(@PathVariable Long musicId, @PathVariable Long userId) {
-        MusicLike musicLike = musicLikeService.addLike(musicId, userId);
-        return ResponseEntity.ok(musicLike);
-    }
 
 
     @DeleteMapping("/{musicId}/user/{userId}")
@@ -37,11 +32,12 @@ public class MusicLikeController {
         return ResponseEntity.ok(isLiked);
     }
 
-    @GetMapping("/user/{userId}/page")
+    @GetMapping("/musics/liked/{user_id}")
     public ResponseEntity<Page<MusicLike>> getLikedMusicsByUserIdWithPagination(
             @PathVariable Long userId, 
             Pageable pageable) {
         Page<MusicLike> likedMusics = musicLikeService.getLikedMusicsByUserIdWithPagination(userId, pageable);
         return ResponseEntity.ok(likedMusics);
-    }
+    
+            }
 }
