@@ -20,10 +20,8 @@ public class WordService {
     private final VocaPersistenceAdapter vocaRepository;
 
     public Word saveWord(WordRequest wordRequest) {
-
         Voca voca = vocaRepository.findById(wordRequest.getVocaId())
                 .orElseThrow(() -> new EntityNotFoundException("단어장을 찾을 수 없습니다."));
-
 
         Validator.validateNotEmpty(wordRequest.getWord(), "Word cannot be empty");
         Validator.validateNotEmpty(wordRequest.getMeaning(), "Word meaning cannot be empty");
@@ -39,11 +37,14 @@ public class WordService {
         return wordRepository.getAllWordsByVocaId(vocaId, pageable);
     }
 
-    public Word updateWord(Long wordId, WordRequest wordRequest, User user) throws NotYourWordException {
+    public Word findById(Long wordId) {
+        return wordRepository.findById(wordId)
+                .orElseThrow(() -> new EntityNotFoundException("Word not found with id: " + wordId));
+    }
 
+    public Word updateWord(Long wordId, WordRequest wordRequest, User user) throws NotYourWordException {
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new EntityNotFoundException("Word not found with id: " + wordId));
-
 
         if(!word.getVoca().getUser().getId().equals(user.getId())){
             throw new NotYourWordException("Access denied: User does not own the word");
@@ -56,7 +57,6 @@ public class WordService {
     }
 
     public Word deleteWord(Long wordId, User user) throws NotYourWordException {
-
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new EntityNotFoundException("Word not found with id: " + wordId));
 
@@ -67,5 +67,4 @@ public class WordService {
 
         return word;
     }
-
 }

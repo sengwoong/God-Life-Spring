@@ -29,6 +29,14 @@ public class PlaylistAdapterImpl implements PlaylistPersistenceAdapter {
     public Page<Playlist> findByUser(User user, Pageable pageable) {
         return playlistRepository.findByUser(user, pageable);
     }
+    
+    @Override
+    public Page<Playlist> findByUserWithSearch(User user, String search, Pageable pageable) {
+        if (search == null || search.trim().isEmpty()) {
+            return playlistRepository.findByUser(user, pageable);
+        }
+        return playlistRepository.findByUserAndPlaylistTitleContaining(user, search.trim(), pageable);
+    }
 
     @Override
     public Optional<Playlist> findById(Long playlistId) {
@@ -44,5 +52,10 @@ public class PlaylistAdapterImpl implements PlaylistPersistenceAdapter {
     public Playlist delete(Playlist playlist){
         playlistRepository.delete(playlist);
         return playlist;
+    }
+
+    @Override
+    public Page<Playlist> findByUserAndIsShared(User user, Boolean isShared, Pageable pageable) {
+        return playlistRepository.findByUserAndIsShared(user, isShared, pageable);
     }
 }

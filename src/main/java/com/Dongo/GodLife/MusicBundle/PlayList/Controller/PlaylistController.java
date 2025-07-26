@@ -33,12 +33,17 @@ public class PlaylistController {
     @GetMapping("/user/{user_id}")
     public ResponseEntity<Page<Playlist>> getPlaylistsByUserId(
             @PathVariable(name = "user_id") Long userId,
+            @RequestParam(required = false) String search,
             Pageable pageable) {
         User user = userService.CheckUserAndGetUser(userId);
-        Page<Playlist> playlists = playlistService.getAllPlaylistsByUserId(user, pageable);
+        Page<Playlist> playlists;
+        if (search != null && !search.trim().isEmpty()) {
+            playlists = playlistService.getAllPlaylistsByUserIdWithSearch(user, search, pageable);
+        } else {
+            playlists = playlistService.getAllPlaylistsByUserId(user, pageable);
+        }
         return ResponseEntity.ok(playlists);
     }
-
 
     @GetMapping("/playlist/{playlist_id}/user/{user_id}")
     public ResponseEntity<Playlist> getPlaylistById(@PathVariable(name = "playlist_id") Long playlistId, @PathVariable(name = "user_id") Long userId) throws NotYourPlaylistException {
@@ -50,6 +55,12 @@ public class PlaylistController {
         return ResponseEntity.ok(playlist);
     }
 
+    @GetMapping("/share/user/{user_id}")
+    public ResponseEntity<Page<Playlist>> sharePlaylist(@PathVariable(name = "user_id") Long userId, Pageable pageable){
+        User user = userService.CheckUserAndGetUser(userId);
+        Page<Playlist> playlists = playlistService.getSharedPlaylistsByUserId(user, pageable);
+        return ResponseEntity.ok(playlists);
+    }
 
     @PutMapping("/playlist/{playlist_id}/user/{user_id}")
     public ResponseEntity<Playlist> updatePlaylist(
@@ -59,28 +70,6 @@ public class PlaylistController {
         User user = userService.CheckUserAndGetUser(userId);
         Playlist updatedPlaylist = playlistService.updatePlayList(playlistId, userId, playlistRequest);
         return ResponseEntity.ok(updatedPlaylist);
-    }
-
-
-    @DeleteMapping("/playlist/{playlist_id}/user/{user_id}")
-    public ResponseEntity<Void> deletePlaylist(
-            @PathVariable(name = "playlist_id") Long playlistId,
-            @PathVariable(name = "user_id") Long userId) throws NotYourPlaylistException {
-        userService.CheckUserAndGetUser(userId);
-        playlistService.deletePlayList(playlistId, userId);
-        return ResponseEntity.noContent().build();
-    }
-
-
-    
-
-
-     
-     @GetMapping("/share/user/{user_id}")
-     public ResponseEntity<Page<Playlist>> sharePlaylist(@PathVariable(name = "user_id") Long userId, Pageable pageable){
-        User user = userService.CheckUserAndGetUser(userId);
-        Page<Playlist> playlists = playlistService.getSharedPlaylistsByUserId(user, pageable);
-        return ResponseEntity.ok(playlists);
     }
 
     @PutMapping("/share/{playlist_id}/user/{user_id}")
@@ -93,4 +82,12 @@ public class PlaylistController {
         return ResponseEntity.ok(updatedPlaylist);
     }
 
+    @DeleteMapping("/playlist/{playlist_id}/user/{user_id}")
+    public ResponseEntity<Void> deletePlaylist(
+            @PathVariable(name = "playlist_id") Long playlistId,
+            @PathVariable(name = "user_id") Long userId) throws NotYourPlaylistException {
+        userService.CheckUserAndGetUser(userId);
+        playlistService.deletePlayList(playlistId, userId);
+        return ResponseEntity.noContent().build();
+    }
 }

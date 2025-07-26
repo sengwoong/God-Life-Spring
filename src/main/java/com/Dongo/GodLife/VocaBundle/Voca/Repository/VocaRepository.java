@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface VocaRepository extends JpaRepository<Voca, Long> {
     Page<Voca> findByUser(User user, Pageable pageable);
 
-    Page<Voca> findByIsShared(Boolean isShared, Pageable pageable);
+    Page<Voca> findByUserAndIsShared(User user, Boolean isShared, Pageable pageable);
 }

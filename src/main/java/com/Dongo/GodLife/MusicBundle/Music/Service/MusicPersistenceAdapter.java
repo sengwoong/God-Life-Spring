@@ -12,6 +12,9 @@ public interface MusicPersistenceAdapter {
     Music save(Music music);
 
     Page<Music> findPlaylistMusics(Long musicId, Pageable pageable);
+    
+    // 검색 기능 추가
+    Page<Music> findPlaylistMusicsWithSearch(Long playlistId, String search, Pageable pageable);
 
     Optional<Music> findById(Long musicId);
 

@@ -1,7 +1,5 @@
 package com.Dongo.GodLife.ScheduleBundle.Schedule.Service;
 
-
-
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Dto.ScheduleRequest;
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Exception.NotYourScheduleException;
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Model.Schedule;
@@ -26,7 +24,6 @@ public class ScheduleService {
         schedule.setDay(request.getDay());
         schedule.setHasAlarm(request.isHasAlarm());
         schedule.setUser(user);
-        
         return scheduleRepository.save(schedule);
     }
 
@@ -40,18 +37,14 @@ public class ScheduleService {
     }
 
     public Schedule updateSchedule(Long scheduleId, ScheduleRequest scheduleRequest, User user) throws  NotYourScheduleException {
-
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with ID: " + scheduleId));
-
         Validator.validateNotEmpty(scheduleRequest.getScheduleTitle(), "Schedule title cannot be empty");
         Validator.validateNotEmpty(scheduleRequest.getStartTime(), "Schedule StartTime cannot be empty");
         Validator.validateNotEmpty(scheduleRequest.getEndTime(), "Schedule EndTime cannot be empty");
-
         if (!schedule.getUser().getId().equals(user.getId())) {
             throw new NotYourScheduleException("Access denied: User does not own the schedule");
         }
-
         schedule.setTitle(scheduleRequest.getScheduleTitle());
         schedule.setContent(scheduleRequest.getContent());
         schedule.setTime(scheduleRequest.getStartTime());

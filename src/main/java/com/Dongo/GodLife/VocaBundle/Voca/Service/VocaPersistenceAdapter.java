@@ -19,5 +19,5 @@ public interface VocaPersistenceAdapter  {
 
     Voca delete(Voca voca);
 
-    @Nullable Page<Voca> findByIsShared(@NotNull Boolean isShared, Pageable pageable);
+    @Nullable Page<Voca> findByUserAndIsShared(@NotNull User user, @NotNull Boolean isShared, Pageable pageable);
 }

@@ -17,16 +17,13 @@ public class MusicLikeController {
 
     private final MusicLikeService musicLikeService;
 
-   
-
-
-    @DeleteMapping("/{musicId}/user/{userId}")
-    public ResponseEntity<Void> removeLike(@PathVariable Long musicId, @PathVariable Long userId) {
-        musicLikeService.removeLike(musicId, userId);
+    @PostMapping("/{musicId}/user/{userId}")
+    public ResponseEntity<Void> toggleLike(@PathVariable Long musicId, @PathVariable Long userId) {
+        musicLikeService.toggleLike(musicId, userId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{musicId}/user/{userId}/check")
+    @GetMapping("music{musicId}/user/{userId}/check")
     public ResponseEntity<Boolean> isLiked(@PathVariable Long musicId, @PathVariable Long userId) {
         boolean isLiked = musicLikeService.isLiked(musicId, userId);
         return ResponseEntity.ok(isLiked);
@@ -38,6 +35,5 @@ public class MusicLikeController {
             Pageable pageable) {
         Page<MusicLike> likedMusics = musicLikeService.getLikedMusicsByUserIdWithPagination(userId, pageable);
         return ResponseEntity.ok(likedMusics);
-    
-            }
+    }
 }

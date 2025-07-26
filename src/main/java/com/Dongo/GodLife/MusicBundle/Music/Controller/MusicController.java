@@ -34,35 +34,35 @@ public class MusicController {
     @GetMapping("/playlist/{playlist_id}")
     public ResponseEntity<Page<Music>> getPlaylistsByUserId(
             @PathVariable(name = "playlist_id") Long playlistId,
+            @RequestParam(required = false) String search,
             Pageable pageable) {
-        Page<Music> music = musicService.getAllMusicByPlaylist(playlistId, pageable);
+        Page<Music> music = musicService.getAllMusicByPlaylist(playlistId, search, pageable);
         return ResponseEntity.ok(music);
-    }
-
-    @PutMapping("/playlist/{playlist_id}/music/{music_id}/user/{user_id}")
-    public ResponseEntity<Music> updateMusic(
-            @PathVariable(name = "user_id") Long userId,
-            @PathVariable(name = "music_id") Long musicId,
-            @PathVariable(name = "playlist_id") Long playlistId,
-            @RequestBody MusicRequest musicRequest) {
-        User user = userService.CheckUserAndGetUser(userId);
-        Music updatedMusic = musicService.updateMusic(musicId, user, musicRequest);
-        return ResponseEntity.ok(updatedMusic);
-    }
-
-    @DeleteMapping("/playlist/{playlist_id}/music/{music_id}/user/{user_id}")
-    public ResponseEntity<Void> deleteMusic(
-            @PathVariable(name = "user_id") Long userId,
-            @PathVariable(name = "music_id") Long musicId,
-            @PathVariable(name = "playlist_id") Long playlistId) {
-        User user = userService.CheckUserAndGetUser(userId);
-        musicService.deleteMusic(musicId, user);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{music_id}")
     public ResponseEntity<Music> getMusicById(@PathVariable(name = "music_id") Long musicId) {
         Music music = musicService.getMusicById(musicId);
         return ResponseEntity.ok(music);
+    }
+
+    @PutMapping("/music/{music_id}/user/{user_id}")
+    public ResponseEntity<Music> updateMusic(
+            @PathVariable(name = "user_id") Long userId,
+            @PathVariable(name = "music_id") Long musicId,
+            @RequestBody MusicRequest musicRequest) {
+        User user = userService.CheckUserAndGetUser(userId);
+        Music updatedMusic = musicService.updateMusic(musicId, user, musicRequest);
+        return ResponseEntity.ok(updatedMusic);
+    }
+
+    @DeleteMapping("/music/{music_id}/user/{user_id}")
+    public ResponseEntity<Void> deleteMusic(
+            @PathVariable(name = "user_id") Long userId,
+            @PathVariable(name = "music_id") Long musicId
+            ) {
+        User user = userService.CheckUserAndGetUser(userId);
+        musicService.deleteMusic(musicId, user);
+        return ResponseEntity.noContent().build();
     }
 } 

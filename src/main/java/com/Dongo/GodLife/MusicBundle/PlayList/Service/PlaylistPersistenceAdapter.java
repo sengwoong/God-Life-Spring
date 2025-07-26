@@ -15,6 +15,10 @@ public interface PlaylistPersistenceAdapter {
 
     Page<Playlist> findByUser(User user, Pageable pageable);
 
+    Page<Playlist> findByUserWithSearch(User user, String search, Pageable pageable);
+    
+    Page<Playlist> findByUserAndIsShared(User user, Boolean isShared, Pageable pageable);
+
     Optional<Playlist> findById(Long playListId);
 
     Playlist delete(Playlist playList) throws NotYourPlaylistException;

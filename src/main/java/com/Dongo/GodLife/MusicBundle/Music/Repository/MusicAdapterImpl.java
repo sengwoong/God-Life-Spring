@@ -29,6 +29,14 @@ public class MusicAdapterImpl implements MusicPersistenceAdapter {
     public Page<Music> findPlaylistMusics(Long musicId, Pageable pageable) {
         return musicRepository.findAllByPlaylist_PlaylistId(musicId,pageable);
     }
+    
+    @Override
+    public Page<Music> findPlaylistMusicsWithSearch(Long playlistId, String search, Pageable pageable) {
+        if (search == null || search.trim().isEmpty()) {
+            return musicRepository.findAllByPlaylist_PlaylistId(playlistId, pageable);
+        }
+        return musicRepository.findAllByPlaylistIdAndMusicTitleContaining(playlistId, search.trim(), pageable);
+    }
 
     @Override
     public Optional<Music> findById(Long musicId) {

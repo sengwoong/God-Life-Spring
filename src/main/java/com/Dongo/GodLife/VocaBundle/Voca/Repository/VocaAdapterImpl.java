@@ -38,4 +38,9 @@ public class VocaAdapterImpl implements VocaPersistenceAdapter {
         vocaRepository.delete(voca);
         return voca;
     }
+
+    @Override
+    public Page<Voca> findByUserAndIsShared(User user, Boolean isShared, Pageable pageable) {
+        return vocaRepository.findByUserAndIsShared(user, isShared, pageable);
+    }
 }

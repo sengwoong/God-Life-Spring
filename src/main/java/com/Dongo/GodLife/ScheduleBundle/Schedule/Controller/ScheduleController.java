@@ -39,7 +39,6 @@ public class ScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
-
     @GetMapping("/schedule/{schedule_id}/user/{user_id}")
     public ResponseEntity<Schedule> getScheduleById(@PathVariable(name = "schedule_id") Long schedule_id, @PathVariable(name = "user_id") Long user_id) throws NotYourScheduleException {
         User user = userService.CheckUserAndGetUser(user_id);

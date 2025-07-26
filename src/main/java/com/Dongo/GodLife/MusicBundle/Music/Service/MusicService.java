@@ -4,6 +4,7 @@ package com.Dongo.GodLife.MusicBundle.Music.Service;
 import com.Dongo.GodLife.MusicBundle.Music.Dto.MusicRequest;
 import com.Dongo.GodLife.MusicBundle.Music.Exception.NotYourMusicException;
 import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
+import com.Dongo.GodLife.MusicBundle.MusicLike.Service.MusicLikeService;
 import com.Dongo.GodLife.MusicBundle.PlayList.Model.Playlist;
 import com.Dongo.GodLife.User.Model.User;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,10 +18,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MusicService {
     private final MusicPersistenceAdapter musicRepository;
-
+    private final MusicLikeService musicLikeService;
 
     public Music createMusic(MusicRequest musicRequest, Playlist playlist) {
-
         Music music = new Music();
         music.setMusicTitle(musicRequest.getMusicTitle());
         music.setMusicUrl(musicRequest.getMusicUrl());
@@ -34,8 +34,20 @@ public class MusicService {
                 .orElseThrow(() -> new EntityNotFoundException("Music not found with id: " + musicId));
     }
 
+    public Page<Music> getAllMusicByPlaylist(Long playlistId, String search, Pageable pageable) {
+        if (search == null || search.trim().isEmpty()) {
+            return musicRepository.findPlaylistMusics(playlistId, pageable);
+        }
+        return musicRepository.findPlaylistMusicsWithSearch(playlistId, search, pageable);
+    }
+    
     public Page<Music> getAllMusicByPlaylist(Long playlistId, Pageable pageable) {
-        return musicRepository.findPlaylistMusics(playlistId,pageable);
+        return musicRepository.findPlaylistMusics(playlistId, pageable);
+    }
+    
+    public Page<Music> getLikedMusicsByUserId(Long userId, Pageable pageable) {
+        return musicLikeService.getLikedMusicsByUserIdWithPagination(userId, pageable)
+                .map(musicLike -> musicLike.getMusic());
     }
 
     public Music updateMusic(Long musicId, User user, MusicRequest musicRequest) {

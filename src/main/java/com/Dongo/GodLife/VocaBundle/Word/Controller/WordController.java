@@ -11,8 +11,6 @@ import com.Dongo.GodLife.VocaBundle.Word.Service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +25,12 @@ public class WordController {
     public ResponseEntity<Word> createWord(@RequestBody WordRequest wordRequest) {
         Word createdWord = wordService.saveWord(wordRequest);
         return ResponseEntity.ok(createdWord);
+    }
+
+    @GetMapping("/word/{word_id}")
+    public ResponseEntity<Word> getWordById(@PathVariable(name = "word_id") Long wordId) {
+        Word word = wordService.findById(wordId);
+        return ResponseEntity.ok(word);
     }
 
     @GetMapping("/voca/{voca_id}")

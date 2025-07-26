@@ -32,7 +32,6 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with Id: " + Id));
     }
 
-
     public UserResponse getUserByUserDetail(Long Id) {
         User user = userRepository.findById(Id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with Id: " + Id));
@@ -56,5 +55,4 @@ public class UserService {
         User user = CheckUserAndGetUser(Id);
         userRepository.delete(Id);
     }
-
 }

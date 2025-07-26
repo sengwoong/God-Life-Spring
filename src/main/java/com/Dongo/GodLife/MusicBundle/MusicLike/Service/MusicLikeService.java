@@ -15,17 +15,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class MusicLikeService {
-    
     private final MusicLikePersistenceAdapter musicLikeAdapter;
-    
 
-    
     public MusicLike addLike(Long musicId, Long userId) {
-
         if (musicLikeAdapter.existsByMusicIdAndUserId(musicId, userId)) {
             return null;
         }
-              
         MusicLike musicLike = new MusicLike();
         Music music = new Music();
         music.setMusicId(musicId);
@@ -33,18 +28,18 @@ public class MusicLikeService {
         user.setId(userId);
         musicLike.setMusic(music);
         musicLike.setUser(user);
-                
         return musicLikeAdapter.save(musicLike);
     }
-    
-    public void removeLike(Long musicId, Long userId) {
+
+    public void toggleLike(Long musicId, Long userId) {
         Optional<MusicLike> musicLike = musicLikeAdapter.findByMusicIdAndUserId(musicId, userId);
-        
         if (musicLike.isPresent()) {
             musicLikeAdapter.deleteById(musicLike.get().getMusicLikeId());
-        } 
+        } else {
+            addLike(musicId, userId);
+        }
     }
-    
+
     public boolean isLiked(Long musicId, Long userId) {
         return musicLikeAdapter.existsByMusicIdAndUserId(musicId, userId);
     }
