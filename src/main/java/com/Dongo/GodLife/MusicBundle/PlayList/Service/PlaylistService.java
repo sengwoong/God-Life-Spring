@@ -24,6 +24,17 @@ public class PlaylistService {
         Playlist playlist = new Playlist();
         playlist.setUser(user);
         playlist.setPlaylistTitle(playListRequest.getPlayListTitle());
+        
+        // imageUrl이 제공된 경우 설정, 아니면 기본값 사용
+        if (playListRequest.getImageUrl() != null && !playListRequest.getImageUrl().trim().isEmpty()) {
+            playlist.setImageUrl(playListRequest.getImageUrl());
+        }
+        
+        // shared 상태 설정
+        if (playListRequest.getShared() != null) {
+            playlist.setShared(playListRequest.getShared());
+        }
+        
         return playlistRepository.save(playlist);
     }
 
@@ -58,6 +69,16 @@ public class PlaylistService {
         }
         Playlist playlist = optionalPlayList.get();
         playlist.setPlaylistTitle(playListRequest.getPlayListTitle());
+        
+        // imageUrl 업데이트
+        if (playListRequest.getImageUrl() != null && !playListRequest.getImageUrl().trim().isEmpty()) {
+            playlist.setImageUrl(playListRequest.getImageUrl());
+        }
+        
+        // shared 상태 업데이트
+        if (playListRequest.getShared() != null) {
+            playlist.setShared(playListRequest.getShared());
+        }
 
         return playlistRepository.save(playlist);
     }

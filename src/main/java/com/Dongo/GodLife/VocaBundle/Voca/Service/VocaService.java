@@ -25,9 +25,10 @@ public class VocaService {
     public Voca createVoca(User user, @Valid VocaRequest vocaRequest) {
         Voca voca = new Voca();
         Validator.validateNotEmpty(vocaRequest.getVocaTitle(), "Voca title cannot be empty");
-        Validator.validateNotEmpty(vocaRequest.getDescription(), "Voca description cannot be empty");
-        voca.setDescription(vocaRequest.getDescription());
+        Validator.validateNotEmpty(vocaRequest.getLanguages(), "Voca languages cannot be empty");
         voca.setVocaTitle(vocaRequest.getVocaTitle());
+        voca.setLanguages(vocaRequest.getLanguages());
+        voca.setDescription(vocaRequest.getDescription());
         voca.setUser(user);
         return vocaRepository.save(voca);
     }
@@ -63,14 +64,15 @@ public class VocaService {
         Voca voca = optionalVoca.get();
 
         Validator.validateNotEmpty(vocaRequest.getVocaTitle(), "Voca title cannot be empty");
-        Validator.validateNotEmpty(vocaRequest.getDescription(), "Voca description cannot be empty");
+        Validator.validateNotEmpty(vocaRequest.getLanguages(), "Voca languages cannot be empty");
 
         if (!voca.getUser().getId().equals(user.getId())) {
             throw new NotYourVocaException("Access denied: User does not own the voca");
         }
 
-        voca.setDescription(vocaRequest.getDescription());
         voca.setVocaTitle(vocaRequest.getVocaTitle());
+        voca.setLanguages(vocaRequest.getLanguages());
+        voca.setDescription(vocaRequest.getDescription());
         voca.setUser(user);
         return vocaRepository.save(voca);
     }

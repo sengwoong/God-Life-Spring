@@ -20,7 +20,8 @@ public class ScheduleService {
         Schedule schedule = new Schedule();
         schedule.setTitle(request.getScheduleTitle());
         schedule.setContent(request.getContent());
-        schedule.setTime(request.getStartTime());
+        schedule.setStartTime(request.getStartTime());
+        schedule.setEndTime(request.getEndTime());
         schedule.setDay(request.getDay());
         schedule.setHasAlarm(request.isHasAlarm());
         schedule.setUser(user);
@@ -47,7 +48,8 @@ public class ScheduleService {
         }
         schedule.setTitle(scheduleRequest.getScheduleTitle());
         schedule.setContent(scheduleRequest.getContent());
-        schedule.setTime(scheduleRequest.getStartTime());
+        schedule.setStartTime(scheduleRequest.getStartTime());
+        schedule.setEndTime(scheduleRequest.getEndTime());
         schedule.setDay(scheduleRequest.getDay());
         schedule.setHasAlarm(scheduleRequest.isHasAlarm());
         return scheduleRepository.save(schedule);

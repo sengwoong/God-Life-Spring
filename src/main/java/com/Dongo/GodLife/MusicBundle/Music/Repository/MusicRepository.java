@@ -10,10 +10,10 @@ import org.springframework.data.repository.query.Param;
 
 
 public interface MusicRepository extends JpaRepository<Music, Long> {
-    Page<Music> findAllByPlaylist_PlaylistId(Long playlistId, Pageable pageable);
+    Page<Music> findAllByPlaylist_PlaylistIdOrderByCreatedAtDesc(Long playlistId, Pageable pageable);
     
     // 검색 기능 추가
-    @Query("SELECT m FROM Music m WHERE m.playlist.playlistId = :playlistId AND m.musicTitle LIKE %:search%")
+    @Query("SELECT m FROM Music m WHERE m.playlist.playlistId = :playlistId AND m.musicTitle LIKE %:search% ORDER BY m.createdAt DESC")
     Page<Music> findAllByPlaylistIdAndMusicTitleContaining(
         @Param("playlistId") Long playlistId, 
         @Param("search") String search, 

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    private final UserPersistenceAdapter userRepository;
+    private final UserPersistenceAdapter userPersistenceAdapter;
 
     public User createUser(String email, String password, String nickName) {
         Validator.validateNickName(nickName);
@@ -24,22 +24,22 @@ public class UserService {
         user.setPassword(password);
         user.setNickName(nickName);
         user.setCreatedAt(LocalDateTime.now());
-        return userRepository.save(user);
+        return userPersistenceAdapter.save(user);
     }
 
     public User CheckUserAndGetUser(Long Id) {
-        return userRepository.findById(Id)
+        return userPersistenceAdapter.findById(Id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with Id: " + Id));
     }
 
     public UserResponse getUserByUserDetail(Long Id) {
-        User user = userRepository.findById(Id)
+        User user = userPersistenceAdapter.findById(Id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with Id: " + Id));
         return new UserResponse(user);
     }
 
     public UpdateUserRequest updateUser(Long Id, UpdateUserRequest request) {
-        User user = userRepository.findById(Id)
+        User user = userPersistenceAdapter.findById(Id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + Id));
 
         user.setNickName(request.getNickName());
@@ -47,12 +47,17 @@ public class UserService {
         user.setAddress(request.getAddress());
         user.setEmail(request.getEmail());
 
-        User updatedUser = userRepository.save(user);
+        User updatedUser = userPersistenceAdapter.save(user);
         return new UpdateUserRequest(updatedUser);
     }
 
     public void deleteUser(Long Id) {
         User user = CheckUserAndGetUser(Id);
-        userRepository.delete(Id);
+        userPersistenceAdapter.delete(Id);
+    }
+    
+
+    public User saveUser(User user) {
+        return userPersistenceAdapter.saveUser(user);
     }
 }

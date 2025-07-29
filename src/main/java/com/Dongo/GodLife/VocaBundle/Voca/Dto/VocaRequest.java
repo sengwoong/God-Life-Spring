@@ -1,6 +1,7 @@
 package com.Dongo.GodLife.VocaBundle.Voca.Dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -13,14 +14,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VocaRequest {
-    @NotNull(message = "Title is required")
-    @Size(min = 1,max=255, message = "Title cannot be empty")
+    @NotBlank(message = "Title is required")
+    @Size(min = 1, max = 255, message = "Title cannot be empty")
     @JsonProperty("vocaTitle")
     private String vocaTitle;
 
-    @NotNull(message = "Description is required")
-    @Size(min = 1,max=255, message = "Description cannot be empty")
+    @NotBlank(message = "Languages is required")
+    @Size(min = 1, max = 100, message = "Languages cannot be empty")
+    @JsonProperty("languages")
+    private String languages;
+
+    @Size(max = 255, message = "Description is too long")
     @JsonProperty("description")
     private String description;
-
 }

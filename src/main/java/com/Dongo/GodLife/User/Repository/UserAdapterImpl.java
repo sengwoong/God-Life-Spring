@@ -42,4 +42,9 @@ public class UserAdapterImpl implements UserPersistenceAdapter {
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
         userRepository.delete(user);
     }
+    
+    @Override
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
 }

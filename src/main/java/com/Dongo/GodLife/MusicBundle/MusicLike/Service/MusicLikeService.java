@@ -1,36 +1,46 @@
 package com.Dongo.GodLife.MusicBundle.MusicLike.Service;
 
+import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
+import com.Dongo.GodLife.MusicBundle.Music.Repository.MusicRepository;
 import com.Dongo.GodLife.MusicBundle.MusicLike.Model.MusicLike;
 import com.Dongo.GodLife.MusicBundle.MusicLike.Repository.MusicLikePersistenceAdapter;
-import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
 import com.Dongo.GodLife.User.Model.User;
+import com.Dongo.GodLife.User.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MusicLikeService {
     private final MusicLikePersistenceAdapter musicLikeAdapter;
+    private final UserService userService;
+    private final MusicRepository musicRepository;
 
+    @Transactional
     public MusicLike addLike(Long musicId, Long userId) {
         if (musicLikeAdapter.existsByMusicIdAndUserId(musicId, userId)) {
             return null;
         }
-        MusicLike musicLike = new MusicLike();
-        Music music = new Music();
-        music.setMusicId(musicId);
-        User user = new User();
-        user.setId(userId);
-        musicLike.setMusic(music);
-        musicLike.setUser(user);
+        
+        User user = userService.CheckUserAndGetUser(userId);
+        Music music = musicRepository.findById(musicId)
+                .orElseThrow(() -> new IllegalArgumentException("Music not found with id: " + musicId));
+        
+        MusicLike musicLike = MusicLike.builder()
+                .music(music)
+                .user(user)
+                .build();
+        
         return musicLikeAdapter.save(musicLike);
     }
 
+    @Transactional
     public void toggleLike(Long musicId, Long userId) {
         Optional<MusicLike> musicLike = musicLikeAdapter.findByMusicIdAndUserId(musicId, userId);
         if (musicLike.isPresent()) {

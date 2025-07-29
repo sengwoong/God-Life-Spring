@@ -12,7 +12,7 @@ public interface WordPersistenceAdapter {
 
     Word save(Word wordRequest);
 
-    Page<Word> getAllWordsByVocaId(Long vocaId, Pageable pageable);
+    Page<Word> getAllWordsByVocaId(Long vocaId,Pageable pageable);
 
     Optional<Word> findById(Long wordId);
 

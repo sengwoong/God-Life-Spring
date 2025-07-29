@@ -45,6 +45,15 @@ public class User {
     @Builder.Default
     private Integer following = 0;
     
+    // null 체크를 위한 메서드 추가
+    public Integer getFollowers() {
+        return followers != null ? followers : 0;
+    }
+    
+    public Integer getFollowing() {
+        return following != null ? following : 0;
+    }
+    
     private int sales;
     private LocalDateTime createdAt;
 

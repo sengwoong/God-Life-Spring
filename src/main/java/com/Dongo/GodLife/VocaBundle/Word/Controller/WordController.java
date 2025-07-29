@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/words")
@@ -22,7 +23,7 @@ public class WordController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Word> createWord(@RequestBody WordRequest wordRequest) {
+    public ResponseEntity<Word> createWord(@RequestBody @Valid WordRequest wordRequest) {
         Word createdWord = wordService.saveWord(wordRequest);
         return ResponseEntity.ok(createdWord);
     }
@@ -33,11 +34,14 @@ public class WordController {
         return ResponseEntity.ok(word);
     }
 
-    @GetMapping("/voca/{voca_id}")
+    //유저체크 필요
+    @GetMapping("/voca/{voca_id}/user/{user_id}")
     public ResponseEntity<Page<Word>> getWordsByVocaId(
             @PathVariable(name = "voca_id") Long vocaId,
+            @PathVariable(name = "user_id") Long userId,
             Pageable pageable) {
-        Page<Word> words = wordService.getAllwordsByVocaId(vocaId, pageable);
+        User user = userService.CheckUserAndGetUser(userId);
+        Page<Word> words = wordService.getAllwordsByVocaId(vocaId, user, pageable);
         return ResponseEntity.ok(words);
     }
 
@@ -45,7 +49,7 @@ public class WordController {
     public ResponseEntity<Word> updateWord(
             @PathVariable(name = "user_id") Long userId,
             @PathVariable(name = "word_id") Long wordId,
-            @RequestBody WordRequest wordRequest) throws NotYourWordException {
+            @RequestBody @Valid WordRequest wordRequest) throws NotYourWordException {
         User user = userService.CheckUserAndGetUser(userId);
         Word updatedWord = wordService.updateWord(wordId, wordRequest, user);
         return ResponseEntity.ok(updatedWord);

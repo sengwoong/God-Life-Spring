@@ -11,4 +11,7 @@ public interface UserPersistenceAdapter {
     Optional<User> findById(Long id);
 
     void delete(Long id);
+    
+    // Follow 관련 메서드 추가
+    User saveUser(User user);
 }

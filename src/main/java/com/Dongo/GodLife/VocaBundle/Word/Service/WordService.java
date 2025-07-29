@@ -23,9 +23,6 @@ public class WordService {
         Voca voca = vocaRepository.findById(wordRequest.getVocaId())
                 .orElseThrow(() -> new EntityNotFoundException("단어장을 찾을 수 없습니다."));
 
-        Validator.validateNotEmpty(wordRequest.getWord(), "Word cannot be empty");
-        Validator.validateNotEmpty(wordRequest.getMeaning(), "Word meaning cannot be empty");
-
         Word word = new Word();
         word.setWord(wordRequest.getWord());
         word.setMeaning(wordRequest.getMeaning());
@@ -33,8 +30,13 @@ public class WordService {
         return wordRepository.save(word);
     }
 
-    public Page<Word> getAllwordsByVocaId(Long vocaId, Pageable pageable) {
-        return wordRepository.getAllWordsByVocaId(vocaId, pageable);
+    public Page<Word> getAllwordsByVocaId(Long vocaId, User user, Pageable pageable) {
+        Voca voca = vocaRepository.findById(vocaId)
+                .orElseThrow(() -> new EntityNotFoundException("Voca not found with id: " + vocaId));
+        if(voca.getUser().getId().equals(user.getId())){
+            return wordRepository.getAllWordsByVocaId(vocaId, pageable);
+        }
+        throw new NotYourWordException("Access denied: User does not own the word");
     }
 
     public Word findById(Long wordId) {

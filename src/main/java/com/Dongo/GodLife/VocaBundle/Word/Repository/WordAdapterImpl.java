@@ -24,12 +24,7 @@ public class WordAdapterImpl implements WordPersistenceAdapter {
 
     @Override
     public Word save(Word wordRequest) {
-
-        Word word = new Word();
-        word.setWord(wordRequest.getWord());
-        word.setMeaning(wordRequest.getMeaning());
-
-        return wordRepository.save(word);
+        return wordRepository.save(wordRequest);
     }
 
     @Override

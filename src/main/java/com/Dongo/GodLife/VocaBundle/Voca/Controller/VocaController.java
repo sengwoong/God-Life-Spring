@@ -59,6 +59,7 @@ public class VocaController {
         return ResponseEntity.ok(vocas);
     }
 
+    // 미구현: 구매한 단어장 조회
     @GetMapping("/purchased/{user_id}")
     public ResponseEntity<Page<Voca>> getPurchasedVocasByUserId(
             @PathVariable(name = "user_id") Long userId,
@@ -69,6 +70,7 @@ public class VocaController {
         return ResponseEntity.ok(vocas);
     }
 
+    // 미구현: 학습 중인 단어장 조회
     @GetMapping("/study/{user_id}")
     public ResponseEntity<Page<Voca>> getStudyVocasByUserId(
             @PathVariable(name = "user_id") Long userId,

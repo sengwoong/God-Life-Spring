@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/playlists")
@@ -24,7 +25,7 @@ public class PlaylistController {
     @PostMapping("/user/{user_id}")
     public ResponseEntity<Playlist> createPlaylist(
             @PathVariable(name = "user_id") Long userId,
-            @RequestBody PlaylistRequest playlistRequest) {
+            @RequestBody @Valid PlaylistRequest playlistRequest) {
         User user = userService.CheckUserAndGetUser(userId);
         Playlist playlist = playlistService.createPlaylist(playlistRequest, user);
         return ResponseEntity.ok(playlist);
@@ -33,7 +34,7 @@ public class PlaylistController {
     @GetMapping("/user/{user_id}")
     public ResponseEntity<Page<Playlist>> getPlaylistsByUserId(
             @PathVariable(name = "user_id") Long userId,
-            @RequestParam(required = false) String search,
+            @RequestParam(name = "search", required = false) String search,
             Pageable pageable) {
         User user = userService.CheckUserAndGetUser(userId);
         Page<Playlist> playlists;
@@ -66,7 +67,7 @@ public class PlaylistController {
     public ResponseEntity<Playlist> updatePlaylist(
             @PathVariable(name = "playlist_id") Long playlistId,
             @PathVariable(name = "user_id") Long userId,
-            @RequestBody PlaylistRequest playlistRequest) throws NotYourPlaylistException {
+            @RequestBody @Valid PlaylistRequest playlistRequest) throws NotYourPlaylistException {
         User user = userService.CheckUserAndGetUser(userId);
         Playlist updatedPlaylist = playlistService.updatePlayList(playlistId, userId, playlistRequest);
         return ResponseEntity.ok(updatedPlaylist);
@@ -76,7 +77,7 @@ public class PlaylistController {
     public ResponseEntity<Playlist> sharePlaylist(
             @PathVariable(name = "playlist_id") Long playlistId,
             @PathVariable(name = "user_id") Long userId,
-            @RequestBody PlaylistRequest playlistRequest) throws NotYourPlaylistException {
+            @RequestBody @Valid PlaylistRequest playlistRequest) throws NotYourPlaylistException {
         User user = userService.CheckUserAndGetUser(userId);
         Playlist updatedPlaylist = playlistService.sharePlaylist(playlistId, userId, playlistRequest);
         return ResponseEntity.ok(updatedPlaylist);

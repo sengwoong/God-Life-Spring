@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/schedules")
@@ -23,7 +24,7 @@ public class ScheduleController {
     @PostMapping("/user/{user_id}")
     public ResponseEntity<Schedule> createSchedule(
             @PathVariable(name = "user_id") Long user_id,
-            @RequestBody ScheduleRequest request) {
+            @RequestBody @Valid ScheduleRequest request) {
         User user = userService.CheckUserAndGetUser(user_id);
         return ResponseEntity.ok(scheduleService.createSchedule(request, user));
     }
@@ -54,7 +55,7 @@ public class ScheduleController {
     public ResponseEntity<Schedule> updateSchedule(
             @PathVariable(name = "schedule_id") Long schedule_id,
             @PathVariable(name = "user_id") Long user_id,
-            @RequestBody ScheduleRequest scheduleRequest) throws NotYourScheduleException {
+            @RequestBody @Valid ScheduleRequest scheduleRequest) throws NotYourScheduleException {
         User user = userService.CheckUserAndGetUser(user_id);
         Schedule updatedSchedule = scheduleService.updateSchedule(schedule_id, scheduleRequest, user);
         return ResponseEntity.ok(updatedSchedule);

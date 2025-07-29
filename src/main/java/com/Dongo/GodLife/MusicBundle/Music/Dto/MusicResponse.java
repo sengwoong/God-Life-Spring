@@ -75,6 +75,7 @@ public class MusicResponse {
                 .imageUrl(music.getImageUrl())
                 .color(music.getColor())
                 .playlist(playlistInfo)
+                .createdAt(music.getCreatedAt())
                 .build();
     }
 } 

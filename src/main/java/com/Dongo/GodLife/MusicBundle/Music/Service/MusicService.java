@@ -25,6 +25,13 @@ public class MusicService {
         music.setMusicTitle(musicRequest.getMusicTitle());
         music.setMusicUrl(musicRequest.getMusicUrl());
         music.setPlaylist(playlist);
+        
+        // imageUrl이 제공되지 않은 경우 기본값 설정
+        if (musicRequest.getImageUrl() != null && !musicRequest.getImageUrl().trim().isEmpty()) {
+            music.setImageUrl(musicRequest.getImageUrl());
+        } else {
+            music.setImageUrl("https://example.com/default-music-image.jpg");
+        }
 
         return musicRepository.save(music);
     }
@@ -60,6 +67,11 @@ public class MusicService {
 
         music.setMusicTitle(musicRequest.getMusicTitle());
         music.setMusicUrl(musicRequest.getMusicUrl());
+        
+        // imageUrl 업데이트
+        if (musicRequest.getImageUrl() != null && !musicRequest.getImageUrl().trim().isEmpty()) {
+            music.setImageUrl(musicRequest.getImageUrl());
+        }
 
         return musicRepository.save(music);
     }
@@ -68,7 +80,7 @@ public class MusicService {
         Music music = musicRepository.findById(musicId)
                 .orElseThrow(() -> new EntityNotFoundException("Music not found with id: " + musicId));
 
-        if (!music.getPlaylist().getPlaylistId().equals(user.getId())) {
+        if (!music.getPlaylist().getUser().getId().equals(user.getId())) {
             throw new NotYourMusicException("You are not the owner of this music.");
         }
 
