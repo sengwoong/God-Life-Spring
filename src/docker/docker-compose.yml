@@ -15,47 +15,17 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
-  redis-master:
+  redis:
     image: redis:6.2
-    container_name: redis_master
+    container_name: redis
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     ports:
       - "6379:6379"
     volumes:
-      - ./redis-master:/usr/local/etc/redis
-      - redis_master_data:/data
+      - ./redis:/usr/local/etc/redis
+      - redis_data:/data
 
-  redis-slave1:
-    image: redis:6.2
-    container_name: redis_slave1
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--slaveof", "redis_master", "6379"]
-    ports:
-      - "6380:6379"
-    volumes:
-      - ./redis-slave1:/usr/local/etc/redis
-      - redis_slave1_data:/data
-
-  redis-slave2:
-    image: redis:6.2
-    container_name: redis_slave2
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--slaveof", "redis_master", "6379"]
-    ports:
-      - "6381:6379"
-    volumes:
-      - ./redis-slave2:/usr/local/etc/redis
-      - redis_slave2_data:/data
-
-  redis-sentinel:
-    image: redis:6.2
-    container_name: redis_sentinel
-    command: ["redis-sentinel", "/usr/local/etc/redis/sentinel.conf"]
-    ports:
-      - "26379:26379"
-    volumes:
-      - ./redis-sentinel:/usr/local/etc/redis
 
 volumes:
   mysql_data:
-  redis_master_data:
-  redis_slave1_data:
-  redis_slave2_data:
+  redis_data:

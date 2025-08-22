@@ -4,6 +4,7 @@ import com.Dongo.GodLife.ScheduleBundle.Schedule.Dto.ScheduleRequest;
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Exception.NotYourScheduleException;
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Model.Schedule;
 import com.Dongo.GodLife.ScheduleBundle.Schedule.Service.ScheduleService;
+import com.Dongo.GodLife.ScheduleBundle.Schedule.Service.SchedulePersistenceAdapter;
 import com.Dongo.GodLife.User.Model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,35 +12,50 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Spy;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleServiceTests {
 
+    @Mock
+    private SchedulePersistenceAdapter scheduleRepository;
+
     @InjectMocks
-    ScheduleService sut;
+    private ScheduleService sut;
 
-    @Spy
-    SchedulePersistenceAdapterStub scheduleRepository;
-
-    User user1;
-    User user2;
+    private User user1;
+    private User user2;
+    private ScheduleRequest scheduleRequest;
 
     @BeforeEach
     void setUp() {
-        user1 = new User("test1@test.com");
-        user1.setId(1L);
-        user2 = new User("test2@test.com");
-        user2.setId(2L);
+        user1 = User.builder()
+                .id(1L)
+                .email("user1@test.com")
+                .nickName("user1")
+                .build();
+
+        user2 = User.builder()
+                .id(2L)
+                .email("user2@test.com")
+                .nickName("user2")
+                .build();
+
+        scheduleRequest = new ScheduleRequest(
+                "일정 제목", "일정 내용", "09:00", "10:00", "2024-01-01", false
+        );
     }
 
     @Nested
@@ -48,112 +64,141 @@ class ScheduleServiceTests {
         @DisplayName("새로운 스케줄을 생성하고 저장한다")
         void testCreateSchedule() {
             // given
-            LocalDateTime startTime = LocalDateTime.now().plusHours(1);
-            LocalDateTime endTime = startTime.plusHours(2);
-            ScheduleRequest scheduleRequest = new ScheduleRequest("일정 제목", startTime, endTime);
+            Schedule schedule = Schedule.builder()
+                    .scheduleId(1L)
+                    .title("일정 제목")
+                    .content("일정 내용")
+                    .startTime("09:00")
+                    .endTime("10:00")
+                    .day("2024-01-01")
+                    .hasAlarm(false)
+                    .user(user1)
+                    .build();
+
+            given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
 
             // when
             Schedule result = sut.createSchedule(scheduleRequest, user1);
 
             // then
             assertNotNull(result);
-            assertEquals("일정 제목", result.getScheduleTitle());
-            assertEquals(startTime, result.getStartTime());
-            assertEquals(endTime, result.getEndTime());
+            assertEquals("일정 제목", result.getTitle());
+            assertEquals("일정 내용", result.getContent());
+            assertEquals("09:00", result.getStartTime());
+            assertEquals("10:00", result.getEndTime());
+            assertEquals("2024-01-01", result.getDay());
+            assertFalse(result.isHasAlarm());
             assertEquals(user1, result.getUser());
+            verify(scheduleRepository).save(any(Schedule.class));
         }
     }
 
     @Nested
-    class GetAllSchedulesByUserId {
+    class GetSchedule {
         @Test
-        @DisplayName("사용자의 모든 스케줄을 페이지 단위로 가져온다")
+        @DisplayName("사용자의 스케줄 목록을 조회한다")
         void testGetAllSchedulesByUserId() throws NotYourScheduleException {
             // given
-            LocalDateTime startTime = LocalDateTime.now().plusHours(1);
-            LocalDateTime endTime = startTime.plusHours(2);
-            ScheduleRequest scheduleRequest = new ScheduleRequest("일정 제목", startTime, endTime);
-            sut.createSchedule(scheduleRequest, user1);
+            Schedule schedule = Schedule.builder()
+                    .scheduleId(1L)
+                    .title("일정 제목")
+                    .content("일정 내용")
+                    .startTime("09:00")
+                    .endTime("10:00")
+                    .day("2024-01-01")
+                    .user(user1)
+                    .build();
 
-            Pageable pageable = PageRequest.of(0, 10);
+            Page<Schedule> schedulePage = new PageImpl<>(List.of(schedule));
+            given(scheduleRepository.findByUser(user1, Pageable.unpaged())).willReturn(schedulePage);
 
             // when
-            Page<Schedule> result = sut.getAllschedulesByUserId(user1, pageable);
+            Page<Schedule> result = sut.getAllschedulesByUserId(user1, Pageable.unpaged());
 
             // then
             assertNotNull(result);
-            assertFalse(result.isEmpty());
-            assertEquals("일정 제목", result.getContent().get(0).getScheduleTitle());
+            assertEquals(1, result.getTotalElements());
+            assertEquals("일정 제목", result.getContent().get(0).getTitle());
+            assertEquals("일정 내용", result.getContent().get(0).getContent());
         }
     }
 
     @Nested
     class UpdateSchedule {
         @Test
-        @DisplayName("자신의 스케줄을 업데이트한다")
-        void testUpdateOwnSchedule() throws NotYourScheduleException {
+        @DisplayName("스케줄을 성공적으로 수정한다")
+        void testUpdateSchedule() throws NotYourScheduleException {
             // given
-            LocalDateTime startTime = LocalDateTime.now().plusHours(1);
-            LocalDateTime endTime = startTime.plusHours(2);
             Schedule existingSchedule = Schedule.builder()
-                .scheduleId(1L)
-                .user(user1)
-                .scheduleTitle("원래 제목")
-                .startTime(startTime)
-                .endTime(endTime)
-                .build();
-            when(scheduleRepository.findById(1L)).thenReturn(java.util.Optional.of(existingSchedule));
+                    .scheduleId(1L)
+                    .title("기존 제목")
+                    .content("기존 내용")
+                    .startTime("09:00")
+                    .endTime("10:00")
+                    .day("2024-01-01")
+                    .user(user1)
+                    .build();
 
-            LocalDateTime newStartTime = LocalDateTime.now().plusHours(3);
-            LocalDateTime newEndTime = newStartTime.plusHours(2);
-            ScheduleRequest scheduleRequest = new ScheduleRequest("수정된 제목", newStartTime, newEndTime);
+            ScheduleRequest updateRequest = new ScheduleRequest(
+                    "수정된 제목", "수정된 내용", "10:00", "11:00", "2024-01-01", true
+            );
+
+            given(scheduleRepository.findById(1L)).willReturn(java.util.Optional.of(existingSchedule));
+            given(scheduleRepository.save(any(Schedule.class))).willReturn(existingSchedule);
 
             // when
-            Schedule result = sut.updateSchedule(1L, user1.getId(), scheduleRequest);
+            Schedule result = sut.updateSchedule(1L, updateRequest, user1);
 
             // then
-            assertEquals("수정된 제목", result.getScheduleTitle());
-            assertEquals(newStartTime, result.getStartTime());
-            assertEquals(newEndTime, result.getEndTime());
+            assertNotNull(result);
+            assertEquals("수정된 제목", result.getTitle());
+            assertEquals("수정된 내용", result.getContent());
+            assertEquals("10:00", result.getStartTime());
+            assertEquals("11:00", result.getEndTime());
+            assertEquals("2024-01-01", result.getDay());
+            assertTrue(result.isHasAlarm());
+            verify(scheduleRepository).save(any(Schedule.class));
         }
 
         @Test
         @DisplayName("다른 사용자의 스케줄을 수정하려고 하면 예외가 발생한다")
-        void testUpdateOthersSchedule() {
+        void testUpdateScheduleNotOwner() {
             // given
-            LocalDateTime startTime = LocalDateTime.now().plusHours(1);
-            LocalDateTime endTime = startTime.plusHours(2);
             Schedule existingSchedule = Schedule.builder()
-                .scheduleId(1L)
-                .user(user2)
-                .scheduleTitle("원래 제목")
-                .startTime(startTime)
-                .endTime(endTime)
-                .build();
-            when(scheduleRepository.findById(1L)).thenReturn(java.util.Optional.of(existingSchedule));
+                    .scheduleId(1L)
+                    .title("기존 제목")
+                    .user(user1)
+                    .build();
 
-            ScheduleRequest scheduleRequest = new ScheduleRequest("수정된 제목", startTime, endTime);
+            ScheduleRequest updateRequest = new ScheduleRequest(
+                    "수정된 제목", "수정된 내용", "10:00", "11:00", "2024-01-01", true
+            );
+
+            given(scheduleRepository.findById(1L)).willReturn(java.util.Optional.of(existingSchedule));
 
             // when & then
             assertThrows(NotYourScheduleException.class,
-                () -> sut.updateSchedule(1L, user1.getId(), scheduleRequest));
+                    () -> sut.updateSchedule(1L, updateRequest, user2));
+            verify(scheduleRepository, never()).save(any(Schedule.class));
         }
     }
 
     @Nested
     class DeleteSchedule {
         @Test
-        @DisplayName("자신의 스케줄을 삭제한다")
-        void testDeleteOwnSchedule() throws NotYourScheduleException {
+        @DisplayName("스케줄을 성공적으로 삭제한다")
+        void testDeleteSchedule() throws NotYourScheduleException {
             // given
             Schedule existingSchedule = Schedule.builder()
-                .scheduleId(1L)
-                .user(user1)
-                .build();
-            when(scheduleRepository.findById(1L)).thenReturn(java.util.Optional.of(existingSchedule));
+                    .scheduleId(1L)
+                    .title("삭제할 스케줄")
+                    .user(user1)
+                    .build();
+
+            given(scheduleRepository.findById(1L)).willReturn(java.util.Optional.of(existingSchedule));
 
             // when
-            sut.deleteSchedule(user1.getId(), 1L);
+            sut.deleteSchedule(1L, user1);
 
             // then
             verify(scheduleRepository).delete(existingSchedule);
@@ -161,17 +206,20 @@ class ScheduleServiceTests {
 
         @Test
         @DisplayName("다른 사용자의 스케줄을 삭제하려고 하면 예외가 발생한다")
-        void testDeleteOthersSchedule() {
+        void testDeleteScheduleNotOwner() throws NotYourScheduleException {
             // given
             Schedule existingSchedule = Schedule.builder()
-                .scheduleId(1L)
-                .user(user2)
-                .build();
-            when(scheduleRepository.findById(1L)).thenReturn(java.util.Optional.of(existingSchedule));
+                    .scheduleId(1L)
+                    .title("삭제할 스케줄")
+                    .user(user1)
+                    .build();
+
+            given(scheduleRepository.findById(1L)).willReturn(java.util.Optional.of(existingSchedule));
 
             // when & then
             assertThrows(NotYourScheduleException.class,
-                () -> sut.deleteSchedule(user1.getId(), 1L));
+                    () -> sut.deleteSchedule(1L, user2));
+            verify(scheduleRepository, never()).delete(any(Schedule.class));
         }
     }
 } 

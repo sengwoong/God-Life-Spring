@@ -14,4 +14,6 @@ public interface UserPersistenceAdapter {
     
     // Follow 관련 메서드 추가
     User saveUser(User user);
+    
+    Optional<User> findByEmail(String email);
 }

@@ -31,7 +31,7 @@ public class WordPersistenceAdapterStub implements WordPersistenceAdapter {
     }
 
     @Override
-    public Page<Word> getAllWordsByVocaId(long vocaId, Pageable pageable) {
+    public Page<Word> getAllWordsByVocaId(Long vocaId, Pageable pageable) {
         List<Word> vocaWords = wordList.stream()
                 .filter(word -> word.getVoca().getVocaId() == vocaId)
                 .collect(Collectors.toList());
@@ -39,14 +39,14 @@ public class WordPersistenceAdapterStub implements WordPersistenceAdapter {
     }
 
     @Override
-    public Optional<Word> findById(long wordId) {
+    public Optional<Word> findById(Long wordId) {
         return wordList.stream()
                 .filter(word -> word.getWordId() == wordId)
                 .findFirst();
     }
 
     @Override
-    public Word delete(long wordId) throws NotYourWordException {
+    public Word delete(Long wordId) throws NotYourWordException {
         Optional<Word> wordOptional = findById(wordId);
         if (wordOptional.isEmpty()) {
             throw new NotYourWordException("Word not found");

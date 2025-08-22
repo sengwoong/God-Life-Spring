@@ -60,4 +60,20 @@ public class UserService {
     public User saveUser(User user) {
         return userPersistenceAdapter.saveUser(user);
     }
+
+    public User findByEmail(String email) {
+        return userPersistenceAdapter.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+    }
+
+    public User authenticateUser(String email, String password) {
+        User user = findByEmail(email);
+        // TODO: 비밀번호 검증 로직 추가 (PasswordEncoder 사용)
+        return user;
+    }
+
+    public User findById(Long id) {
+        return userPersistenceAdapter.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+    }
 }

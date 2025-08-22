@@ -39,7 +39,7 @@ public class MusicController {
             @Parameter(description = "사용자 ID", example = "1")
             @PathVariable(name = "user_id") Long userId,
             @RequestBody @Valid MusicRequest musicRequest) {
-        User user = userService.CheckUserAndGetUser(userId);
+        userService.CheckUserAndGetUser(userId);
         Playlist playlist = playlistService.getPlayListById(playlistId);
         
         // 플레이리스트 소유자 체킹
@@ -53,7 +53,7 @@ public class MusicController {
 
         @GetMapping("/playlist/{playlist_id}/user/{user_id}")
     @Operation(summary = "플레이리스트 음악 조회", description = "사용자가 자신의 플레이리스트 음악 목록을 조회합니다.")
-    public ResponseEntity<Page<MusicResponse>> getMusicsByPlaylist(
+    public ResponseEntity<java.util.List<MusicResponse>> getMusicsByPlaylist(
             @Parameter(description = "플레이리스트 ID", example = "1")
             @PathVariable(name = "playlist_id") Long playlistId,
             @Parameter(description = "사용자 ID", example = "1")
@@ -61,7 +61,7 @@ public class MusicController {
             @RequestParam(name = "search", required = false) String search,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        User user = userService.CheckUserAndGetUser(userId);
+        userService.CheckUserAndGetUser(userId);
         Playlist playlist = playlistService.getPlayListById(playlistId);
 
         // 플레이리스트 소유자 체킹
@@ -70,8 +70,8 @@ public class MusicController {
         }
 
         Page<Music> musicPage = musicService.getAllMusicByPlaylist(playlistId, search, pageable);
-        Page<MusicResponse> responsePage = musicPage.map(MusicResponse::from);
-        return ResponseEntity.ok(responsePage);
+        java.util.List<MusicResponse> responseList = musicPage.map(MusicResponse::from).getContent();
+        return ResponseEntity.ok(responseList);
     }
 
     @GetMapping("/{music_id}/user/{user_id}")
@@ -81,7 +81,7 @@ public class MusicController {
             @PathVariable(name = "music_id") Long musicId,
             @Parameter(description = "사용자 ID", example = "1")
             @PathVariable(name = "user_id") Long userId) {
-        User user = userService.CheckUserAndGetUser(userId);
+        userService.CheckUserAndGetUser(userId);
         Music music = musicService.getMusicById(musicId);
         
         // 음악이 속한 플레이리스트의 소유자 체킹

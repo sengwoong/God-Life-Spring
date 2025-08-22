@@ -41,9 +41,9 @@ public class VocaPersistenceAdapterStub implements VocaPersistenceAdapter {
     }
 
     @Override
-    public Optional<Voca> findById(long id) {
+    public Optional<Voca> findById(Long id) {
         return vocaList.stream()
-                .filter(voca -> voca.getVocaId() == id)
+                .filter(voca -> voca.getVocaId().equals(id))
                 .findFirst();
     }
 
@@ -53,6 +53,16 @@ public class VocaPersistenceAdapterStub implements VocaPersistenceAdapter {
         return voca;
     }
 
+    @Override
+    public Page<Voca> findByUserAndIsShared(User user, Boolean isShared, Pageable pageable) {
+        List<Voca> userVocas = new ArrayList<>();
+        for (Voca voca : vocaList) {
+            if (voca.getUser().equals(user) && voca.getIsShared() == isShared) {
+                userVocas.add(voca);
+            }
+        }
+        return new PageImpl<>(userVocas, pageable, userVocas.size());
+    }
     
     public User getUser(long vocaId) {
         return findById(vocaId).map(Voca::getUser).orElse(null);

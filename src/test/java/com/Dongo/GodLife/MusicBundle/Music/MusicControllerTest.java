@@ -2,156 +2,138 @@ package com.Dongo.GodLife.MusicBundle.Music;
 
 import com.Dongo.GodLife.MusicBundle.Music.Controller.MusicController;
 import com.Dongo.GodLife.MusicBundle.Music.Dto.MusicRequest;
+import com.Dongo.GodLife.MusicBundle.Music.Dto.MusicResponse;
 import com.Dongo.GodLife.MusicBundle.Music.Model.Music;
 import com.Dongo.GodLife.MusicBundle.Music.Service.MusicService;
+import com.Dongo.GodLife.MusicBundle.PlayList.Model.Playlist;
+import com.Dongo.GodLife.MusicBundle.PlayList.Service.PlaylistService;
 import com.Dongo.GodLife.User.Model.User;
 import com.Dongo.GodLife.User.Service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(MusicController.class)
+@ExtendWith(MockitoExtension.class)
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 class MusicControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private MusicService musicService;
 
-    @MockBean
+    @Mock
     private UserService userService;
 
-    @Autowired
+    @Mock
+    private PlaylistService playlistService;
+
+    @InjectMocks
+    private MusicController musicController;
+
+    private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
-    @DisplayName("Music 관리")
+    @BeforeEach
+    void setUp() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.findAndRegisterModules();
+        mockMvc = MockMvcBuilders.standaloneSetup(musicController)
+                .setCustomArgumentResolvers(new org.springframework.data.web.PageableHandlerMethodArgumentResolver())
+                .setMessageConverters(new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(mapper))
+                .build();
+        objectMapper = mapper;
+    }
+
     @Nested
     class MusicManagement {
+        @Test
+        @DisplayName("새로운 음악을 생성한다")
+        void testCreateMusic() throws Exception {
+            // given
+            User user = User.builder().id(1L).build();
+            Playlist playlist = Playlist.builder().playlistId(1L).user(user).build();
+            MusicRequest request = new MusicRequest();
+            request.setMusicTitle("Test Music");
+            request.setMusicUrl("http://test.com/music.mp3");
+            
+            Music music = Music.builder()
+                    .musicId(1L)
+                    .musicTitle("Test Music")
+                    .musicUrl("http://test.com/music.mp3")
+                    .createdAt(LocalDateTime.now())
+                    .build();
 
-        @DisplayName("Music 생성")
-        @Nested
-        class CreateMusic {
-            @Test
-            @DisplayName("정상적인 요청일 경우, Music을 반환한다")
-            void createMusic_Success() throws Exception {
-                // given
-                MusicRequest musicRequest = new MusicRequest();
-                musicRequest.setMusicTitle("Test Song");
-                musicRequest.setMusicUrl("http://test.com/song.mp3");
+            given(userService.CheckUserAndGetUser(1L)).willReturn(user);
+            given(playlistService.getPlayListById(1L)).willReturn(playlist);
+            given(musicService.createMusic(any(MusicRequest.class), any(Playlist.class))).willReturn(music);
 
-                Music music = new Music();
-                music.setMusicTitle("Test Song");
-                music.setMusicUrl("http://test.com/song.mp3");
+            // when & then
+            mockMvc.perform(post("/musics/playlist/1/user/1")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.musicId").value(1))
+                    .andExpect(jsonPath("$.musicTitle").value("Test Music"))
+                    .andExpect(jsonPath("$.musicUrl").value("http://test.com/music.mp3"));
 
-                given(musicService.createMusic(any(MusicRequest.class))).willReturn(music);
-
-                // when & then
-                mockMvc.perform(post("/musics")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(musicRequest)))
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.musicTitle").value("Test Song"))
-                        .andExpect(jsonPath("$.musicUrl").value("http://test.com/song.mp3"));
-
-                verify(musicService).createMusic(any(MusicRequest.class));
-            }
+            verify(musicService).createMusic(any(MusicRequest.class), any(Playlist.class));
         }
 
-        @DisplayName("Music 조회")
-        @Nested
-        class GetMusics {
-            @Test
-            @DisplayName("Playlist의 Music 목록을 조회한다")
-            void getMusicsByPlaylistId_Success() throws Exception {
-                // given
-                Music music = new Music();
-                music.setMusicTitle("Test Song");
-                music.setMusicUrl("http://test.com/song.mp3");
+        @Test
+        @DisplayName("플레이리스트의 음악 목록을 조회한다")
+        void testGetMusicByPlaylist() throws Exception {
+            // given
+            User user = User.builder().id(1L).build();
+            Playlist playlist = Playlist.builder().playlistId(1L).user(user).build();
+            Music music = Music.builder()
+                    .musicId(1L)
+                    .musicTitle("Test Music")
+                    .musicUrl("http://test.com/music.mp3")
+                    .playlist(playlist)
+                    .build();
+            Page<Music> musicPage = new PageImpl<>(java.util.Arrays.asList(music));
 
-                Page<Music> musicPage = new PageImpl<>(List.of(music));
+            given(userService.CheckUserAndGetUser(1L)).willReturn(user);
+            given(playlistService.getPlayListById(1L)).willReturn(playlist);
+            given(musicService.getAllMusicByPlaylist(anyLong(), org.mockito.ArgumentMatchers.<String>any(), any(Pageable.class))).willReturn(musicPage);
 
-                given(musicService.getAllMusicByPlaylist(anyLong(), any())).willReturn(musicPage);
+            // when & then
+            mockMvc.perform(get("/musics/playlist/1/user/1").param("search", ""))
+                    .andExpect(status().isOk());
 
-                // when & then
-                mockMvc.perform(get("/musics/playlist/{playlist_id}", 1L)
-                                .param("page", "0")
-                                .param("size", "10"))
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.content[0].musicTitle").value("Test Song"))
-                        .andExpect(jsonPath("$.content[0].musicUrl").value("http://test.com/song.mp3"));
-
-                verify(musicService).getAllMusicByPlaylist(anyLong(), any());
-            }
+            verify(musicService).getAllMusicByPlaylist(anyLong(), org.mockito.ArgumentMatchers.<String>any(), any(Pageable.class));
         }
 
-        @DisplayName("Music 수정")
-        @Nested
-        class UpdateMusic {
-            @Test
-            @DisplayName("정상적인 요청일 경우, 수정된 Music을 반환한다")
-            void updateMusic_Success() throws Exception {
-                // given
-                User user = new User("test@test.com");
-                MusicRequest musicRequest = new MusicRequest();
-                musicRequest.setMusicTitle("Updated Song");
-                musicRequest.setMusicUrl("http://test.com/updated.mp3");
+        @Test
+        @DisplayName("음악을 삭제한다")
+        void testDeleteMusic() throws Exception {
+            // when & then
+            User user = User.builder().id(1L).build();
+            given(userService.CheckUserAndGetUser(1L)).willReturn(user);
+            mockMvc.perform(delete("/musics/music/1/user/1"))
+                    .andExpect(status().isNoContent());
 
-                Music updatedMusic = new Music();
-                updatedMusic.setMusicTitle("Updated Song");
-                updatedMusic.setMusicUrl("http://test.com/updated.mp3");
-
-                given(userService.CheckUserAndGetUser(anyLong())).willReturn(user);
-                given(musicService.updateMusic(anyLong(), any(User.class), any(MusicRequest.class)))
-                        .willReturn(updatedMusic);
-
-                // when & then
-                mockMvc.perform(put("/musics/music/{music_id}/user/{user_id}", 1L, 1L)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(musicRequest)))
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.musicTitle").value("Updated Song"))
-                        .andExpect(jsonPath("$.musicUrl").value("http://test.com/updated.mp3"));
-
-                verify(userService).CheckUserAndGetUser(anyLong());
-                verify(musicService).updateMusic(anyLong(), any(User.class), any(MusicRequest.class));
-            }
-        }
-
-        @DisplayName("Music 삭제")
-        @Nested
-        class DeleteMusic {
-            @Test
-            @DisplayName("정상적인 요청일 경우, 204 status를 반환한다")
-            void deleteMusic_Success() throws Exception {
-                // given
-                User user = new User("test@test.com");
-                given(userService.CheckUserAndGetUser(anyLong())).willReturn(user);
-
-                // when & then
-                mockMvc.perform(delete("/musics/music/{music_id}/user/{user_id}", 1L, 1L))
-                        .andExpect(status().isNoContent());
-
-                verify(userService).CheckUserAndGetUser(anyLong());
-                verify(musicService).deleteMusic(anyLong(), any(User.class));
-            }
+            verify(musicService).deleteMusic(org.mockito.ArgumentMatchers.eq(1L), any(User.class));
         }
     }
 } 

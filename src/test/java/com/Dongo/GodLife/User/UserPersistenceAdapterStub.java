@@ -36,4 +36,26 @@ public class UserPersistenceAdapterStub implements UserPersistenceAdapter {
     public void delete(Long id) {
         userList.removeIf(user -> user.getId().equals(id));
     }
+
+    @Override
+    public User saveUser(User user) {
+        return save(user);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userList.stream()
+                .filter(user -> user.getEmail().equals(email))
+                .findFirst();
+    }
+
+    // 테스트용 헬퍼 메서드
+    public void clear() {
+        userList.clear();
+        idGenerator.set(1);
+    }
+
+    public List<User> getAllUsers() {
+        return new ArrayList<>(userList);
+    }
 } 

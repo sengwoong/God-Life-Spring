@@ -109,6 +109,11 @@ public class PlaylistService {
         playlistRepository.delete(playlist);
     }
 
+    // 테스트 호환을 위한 별칭 메서드 (이름만 다름)
+    public void deletePlaylist(Long playListId, Long userId) throws NotYourPlaylistException {
+        deletePlayList(playListId, userId);
+    }
+
     public Playlist save(Playlist playlist) {
         return playlistRepository.save(playlist);
     }

@@ -59,6 +59,7 @@ class VocaServiceTests {
             // given
             VocaRequest vocaRequest = new VocaRequest();
             vocaRequest.setVocaTitle("world");
+            vocaRequest.setLanguages("EN");
             vocaRequest.setDescription("세계");
 
             // when
@@ -138,6 +139,7 @@ class VocaServiceTests {
           
             VocaRequest vocaRequest = new VocaRequest();
             vocaRequest.setVocaTitle("updated title");
+            vocaRequest.setLanguages("EN");
             vocaRequest.setDescription("updated description");
     
             // when
@@ -163,6 +165,7 @@ class VocaServiceTests {
 
             VocaRequest vocaRequest = new VocaRequest();
             vocaRequest.setVocaTitle("updated title");
+            vocaRequest.setLanguages("EN");
             vocaRequest.setDescription("updated description");
 
             // when & then
@@ -194,7 +197,7 @@ class VocaServiceTests {
             when(vocaRepository.findById(1L)).thenReturn(Optional.of(existingVoca));
 
             // when
-            sut.deleteVoca(1L, user1.getId());
+            sut.deleteVoca(1L, user1);
 
             // then
             verify(vocaRepository).delete(existingVoca);
@@ -211,14 +214,14 @@ class VocaServiceTests {
             when(vocaRepository.findById(1L)).thenReturn(Optional.of(existingVoca));
 
             // when & then
-            assertThrows(NotYourVocaException.class, () -> sut.deleteVoca(1L, user1.getId()));
+            assertThrows(NotYourVocaException.class, () -> sut.deleteVoca(1L, user1));
         }
 
         @DisplayName("존재하지 않는 Voca를 삭제하려고 하면 예외가 발생한다")
         @Test
         void testDeleteNonExistingVoca() {
             // when & then
-            assertThrows(NoSuchElementException.class, () -> sut.deleteVoca(30L, user1.getId()));
+            assertThrows(NoSuchElementException.class, () -> sut.deleteVoca(30L, user1));
         }
     }
 

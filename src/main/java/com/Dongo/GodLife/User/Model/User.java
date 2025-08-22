@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 
@@ -45,6 +46,12 @@ public class User {
     @Builder.Default
     private Integer following = 0;
     
+    @Builder.Default
+    private int sales = 0;
+    
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
     // null 체크를 위한 메서드 추가
     public Integer getFollowers() {
         return followers != null ? followers : 0;
@@ -53,17 +60,14 @@ public class User {
     public Integer getFollowing() {
         return following != null ? following : 0;
     }
-    
-    private int sales;
-    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Voca> voca;
+    private List<Voca> voca = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Schedule> schedules;
+    private List<Schedule> schedules = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

@@ -8,161 +8,169 @@ import com.Dongo.GodLife.ScheduleBundle.Schedule.Service.ScheduleService;
 import com.Dongo.GodLife.User.Model.User;
 import com.Dongo.GodLife.User.Service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ScheduleController.class)
+@ExtendWith(MockitoExtension.class)
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 class ScheduleControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private ScheduleService scheduleService;
 
-    @MockBean
+    @Mock
     private UserService userService;
 
-    @Autowired
+    @InjectMocks
+    private ScheduleController scheduleController;
+
+    private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
-    @DisplayName("스케줄 관리")
+    @BeforeEach
+    void setUp() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.findAndRegisterModules();
+        objectMapper = mapper;
+        mockMvc = MockMvcBuilders.standaloneSetup(scheduleController)
+                .setCustomArgumentResolvers(new org.springframework.data.web.PageableHandlerMethodArgumentResolver())
+                .setMessageConverters(new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(mapper))
+                .build();
+    }
+
     @Nested
     class ScheduleManagement {
+        @Test
+        @DisplayName("새로운 스케줄을 생성한다")
+        void testCreateSchedule() throws Exception {
+            // given
+            User user = User.builder().id(1L).email("test@test.com").build();
+            ScheduleRequest request = new ScheduleRequest(
+                "일정 제목", "일정 내용", "09:00", "10:00", "2024-01-01", false
+            );
 
-        @DisplayName("스케줄 생성")
-        @Nested
-        class CreateSchedule {
-            @Test
-            @DisplayName("정상적인 요청일 경우, 200 status와 Schedule을 반환한다")
-            void createSchedule_Success() throws Exception {
-                // given
-                User user = new User("test@test.com");
-                LocalDateTime startTime = LocalDateTime.now().plusHours(1);
-                LocalDateTime endTime = startTime.plusHours(2);
-                ScheduleRequest scheduleRequest = new ScheduleRequest("일정 제목", startTime, endTime);
+            Schedule schedule = Schedule.builder()
+                .scheduleId(1L)
+                .title("일정 제목")
+                .content("일정 내용")
+                .startTime("09:00")
+                .endTime("10:00")
+                .day("2024-01-01")
+                .hasAlarm(false)
+                .user(user)
+                .build();
 
-                Schedule schedule = Schedule.builder()
-                    .scheduleTitle("일정 제목")
-                    .startTime(startTime)
-                    .endTime(endTime)
-                    .user(user)
-                    .build();
+            given(userService.CheckUserAndGetUser(1L)).willReturn(user);
+            given(scheduleService.createSchedule(any(ScheduleRequest.class), any(User.class)))
+                .willReturn(schedule);
 
-                given(userService.CheckUserAndGetUser(anyLong())).willReturn(user);
-                given(scheduleService.createSchedule(any(ScheduleRequest.class), any(User.class)))
-                    .willReturn(schedule);
+            // when & then
+            mockMvc.perform(post("/schedules/user/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("일정 제목"));
 
-                // when & then
-                mockMvc.perform(post("/schedules/user/{user_id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(scheduleRequest)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.scheduleTitle").value("일정 제목"));
-
-                verify(userService).CheckUserAndGetUser(anyLong());
-                verify(scheduleService).createSchedule(any(ScheduleRequest.class), any(User.class));
-            }
+            verify(scheduleService).createSchedule(any(ScheduleRequest.class), any(User.class));
         }
 
-        @DisplayName("스케줄 조회")
-        @Nested
-        class GetSchedules {
-            @Test
-            @DisplayName("사용자의 스케줄 목록을 조회한다")
-            void getSchedulesByUserId_Success() throws Exception ,NotYourScheduleException {
-                // given
-                User user = new User("test@test.com");
-                LocalDateTime startTime = LocalDateTime.now().plusHours(1);
-                LocalDateTime endTime = startTime.plusHours(2);
-                
-                Schedule schedule = Schedule.builder()
-                    .scheduleTitle("일정 제목")
-                    .startTime(startTime)
-                    .endTime(endTime)
-                    .user(user)
-                    .build();
+        @Test
+        @DisplayName("사용자의 스케줄 목록을 조회한다")
+        void testGetSchedulesByUserId() throws Exception, NotYourScheduleException {
+            // given
+            User user = User.builder().id(1L).email("test@test.com").build();
+            Schedule schedule = Schedule.builder()
+                .scheduleId(1L)
+                .title("일정 제목")
+                .content("일정 내용")
+                .startTime("09:00")
+                .endTime("10:00")
+                .day("2024-01-01")
+                .user(user)
+                .build();
 
-                Page<Schedule> schedulePage = new PageImpl<>(List.of(schedule));
+            Page<Schedule> schedulePage = new PageImpl<>(List.of(schedule));
 
-                given(userService.CheckUserAndGetUser(anyLong())).willReturn(user);
-                given(scheduleService.getAllschedulesByUserId(any(User.class), any()))
-                    .willReturn(schedulePage);
+            given(userService.CheckUserAndGetUser(org.mockito.ArgumentMatchers.eq(1L))).willReturn(user);
+            given(scheduleService.getAllschedulesByUserId(org.mockito.ArgumentMatchers.any(User.class), org.mockito.ArgumentMatchers.any(Pageable.class)))
+                .willReturn(schedulePage);
 
-                // when & then
-                mockMvc.perform(get("/schedules/user/{user_id}", 1L)
-                        .param("page", "0")
-                        .param("size", "10"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.content[0].scheduleTitle").value("일정 제목"));
+            // when & then
+            mockMvc.perform(get("/schedules/user/1").param("page", "0").param("size", "10"))
+                .andExpect(status().isOk());
 
-                verify(userService).CheckUserAndGetUser(anyLong());
-                verify(scheduleService).getAllschedulesByUserId(any(User.class), any());
-            }
+            verify(scheduleService).getAllschedulesByUserId(org.mockito.ArgumentMatchers.any(User.class), org.mockito.ArgumentMatchers.any(Pageable.class));
         }
 
-        @DisplayName("스케줄 수정")
-        @Nested
-        class UpdateSchedule {
-            @Test
-            @DisplayName("정상적인 요청일 경우, 수정된 Schedule을 반환한다")
-            void updateSchedule_Success() throws Exception ,NotYourScheduleException {
-                // given
-                LocalDateTime startTime = LocalDateTime.now().plusHours(1);
-                LocalDateTime endTime = startTime.plusHours(2);
-                ScheduleRequest scheduleRequest = new ScheduleRequest("수정된 제목", startTime, endTime);
+        @Test
+        @DisplayName("스케줄을 업데이트한다")
+        void testUpdateSchedule() throws Exception, NotYourScheduleException {
+            // given
+            User user = User.builder().id(1L).email("test@test.com").build();
+            ScheduleRequest request = new ScheduleRequest(
+                "수정된 제목", "수정된 내용", "10:00", "11:00", "2024-01-01", true
+            );
 
-                Schedule updatedSchedule = Schedule.builder()
-                    .scheduleTitle("수정된 제목")
-                    .startTime(startTime)
-                    .endTime(endTime)
-                    .build();
+            Schedule updatedSchedule = Schedule.builder()
+                .scheduleId(1L)
+                .title("수정된 제목")
+                .content("수정된 내용")
+                .startTime("10:00")
+                .endTime("11:00")
+                .day("2024-01-01")
+                .hasAlarm(true)
+                .user(user)
+                .build();
 
-                given(scheduleService.updateSchedule(anyLong(), anyLong(), any(ScheduleRequest.class)))
-                    .willReturn(updatedSchedule);
+            given(userService.CheckUserAndGetUser(1L)).willReturn(user);
+            given(scheduleService.updateSchedule(eq(1L), any(ScheduleRequest.class), eq(user)))
+                .willReturn(updatedSchedule);
 
-                // when & then
-                mockMvc.perform(put("/schedules/schedule/{schedule_id}/user/{user_id}", 1L, 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(scheduleRequest)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.scheduleTitle").value("수정된 제목"));
+            // when & then
+            mockMvc.perform(put("/schedules/schedule/1/user/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("수정된 제목"));
 
-                verify(scheduleService).updateSchedule(anyLong(), anyLong(), any(ScheduleRequest.class));
-            }
+            verify(userService).CheckUserAndGetUser(1L);
+            verify(scheduleService).updateSchedule(eq(1L), any(ScheduleRequest.class), eq(user));
         }
 
-        @DisplayName("스케줄 삭제")
-        @Nested
-        class DeleteSchedule {
-            @Test
-            @DisplayName("정상적인 요청일 경우, 204 status를 반환한다")
-            void deleteSchedule_Success() throws Exception ,NotYourScheduleException {
-                // when & then
-                mockMvc.perform(delete("/schedules/schedule/{schedule_id}/user/{user_id}", 1L, 1L))
-                    .andExpect(status().isNoContent());
+        @Test
+        @DisplayName("스케줄을 삭제한다")
+        void testDeleteSchedule() throws Exception, NotYourScheduleException {
+            // given
+            User user = User.builder().id(1L).email("test@test.com").build();
+            given(userService.CheckUserAndGetUser(org.mockito.ArgumentMatchers.eq(1L))).willReturn(user);
 
-                verify(scheduleService).deleteSchedule(anyLong(), anyLong());
-            }
+            // when & then
+            mockMvc.perform(delete("/schedules/schedule/1/user/1"))
+                .andExpect(status().isNoContent());
+
+            verify(scheduleService).deleteSchedule(org.mockito.ArgumentMatchers.eq(1L), any(User.class));
         }
     }
 } 

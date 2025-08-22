@@ -22,4 +22,10 @@ public class PlaylistRequest {
     private String imageUrl;
     
     private Boolean shared = false;
+
+    public PlaylistRequest(String playListTitle) {
+        this.playListTitle = playListTitle;
+        this.imageUrl = null;
+        this.shared = false;
+    }
 }

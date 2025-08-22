@@ -32,9 +32,9 @@ public class SchedulePersistenceAdapterStub implements SchedulePersistenceAdapte
     }
 
     @Override
-    public Optional<Schedule> findById(long id) {
+    public Optional<Schedule> findById(Long id) {
         return scheduleList.stream()
-                .filter(schedule -> schedule.getScheduleId() == id)
+                .filter(schedule -> schedule.getScheduleId().equals(id))
                 .findFirst();
     }
 

@@ -39,21 +39,44 @@ public class PlaylistPersistenceAdapterStub implements PlaylistPersistenceAdapte
                 .collect(Collectors.toList());
         return new PageImpl<>(userPlaylists, pageable, userPlaylists.size());
     }
+    
+    @Override
+    public Page<Playlist> findByUserWithSearch(User user, String search, Pageable pageable) {
+        List<Playlist> userPlaylists = playlistList.stream()
+                .filter(playlist -> playlist.getUser().equals(user) &&
+                        playlist.getPlaylistTitle().toLowerCase().contains(search.toLowerCase()))
+                .collect(Collectors.toList());
+        return new PageImpl<>(userPlaylists, pageable, userPlaylists.size());
+    }
+    
+    @Override
+    public Page<Playlist> findByUserAndIsShared(User user, Boolean isShared, Pageable pageable) {
+        List<Playlist> userPlaylists = playlistList.stream()
+                .filter(playlist -> playlist.getUser().equals(user) &&
+                        playlist.isShared() == isShared)
+                .collect(Collectors.toList());
+        return new PageImpl<>(userPlaylists, pageable, userPlaylists.size());
+    }
 
     @Override
-    public Optional<Playlist> findById(long playlistId) {
+    public Optional<Playlist> findById(Long playlistId) {
         return playlistList.stream()
-                .filter(playlist -> playlist.getPlaylistId() == playlistId)
+                .filter(playlist -> playlist.getPlaylistId().equals(playlistId))
                 .findFirst();
     }
 
     @Override
     public Playlist delete(Playlist playlist) throws NotYourPlaylistException {
-        if (playlist == null) {
-            throw new NotYourPlaylistException("Playlist cannot be null");
-        }
         playlistList.removeIf(existingPlaylist -> 
             existingPlaylist.getPlaylistId().equals(playlist.getPlaylistId()));
         return playlist;
+    }
+    
+    @Override
+    public Page<Playlist> findByIsShared(Boolean isShared, Pageable pageable) {
+        List<Playlist> sharedPlaylists = playlistList.stream()
+                .filter(playlist -> playlist.isShared() == isShared)
+                .collect(Collectors.toList());
+        return new PageImpl<>(sharedPlaylists, pageable, sharedPlaylists.size());
     }
 } 

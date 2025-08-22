@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,6 +103,7 @@ class UserServiceTests {
             UpdateUserRequest result = sut.updateUser(1L, request);
 
             // then
+            assertNotNull(result);
             assertEquals("updated@test.com", result.getEmail());
             assertEquals("updatedNick", result.getNickName());
             assertEquals("010-1234-5678", result.getPhoneNumber());
@@ -111,19 +114,20 @@ class UserServiceTests {
     @Nested
     class DeleteUser {
         @Test
-        @DisplayName("존재하는 사용자를 삭제한다")
-        void testDeleteExistingUser() {
+        @DisplayName("사용자를 삭제한다")
+        void testDeleteUser() {
             // given
             User user = User.builder()
                 .id(1L)
                 .email("test@test.com")
+                .nickName("nickname")
                 .build();
             userRepository.save(user);
 
-            // when
-            sut.deleteUser(1L);
-
-            // then
+            // when & then
+            assertDoesNotThrow(() -> sut.deleteUser(1L));
+            
+            // 삭제 확인
             assertThrows(UserNotFoundException.class,
                 () -> sut.CheckUserAndGetUser(1L));
         }

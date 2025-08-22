@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,21 +26,27 @@ public class VocaController {
     private final VocaService vocaService;
     private final UserService userService;
 
-    @PostMapping("/user/{user_id}")
+    @PostMapping
     public ResponseEntity<Voca> createVoca(
-            @PathVariable(name = "user_id") Long userId,
             @RequestBody @Valid VocaRequest vocaRequest) {
-        User user = userService.CheckUserAndGetUser(userId);
+        // JWT 토큰에서 사용자 정보 추출
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        User user = userService.findByEmail(userEmail);
+        
         Voca voca = vocaService.createVoca(user, vocaRequest);
         return ResponseEntity.ok(voca);
     }
 
-    @GetMapping("/user/{user_id}")
+    @GetMapping("/user")
     public ResponseEntity<Page<Voca>> getVocasByUserId(
-            @PathVariable(name = "user_id") Long userId,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        User user = userService.CheckUserAndGetUser(userId);
+        // JWT 토큰에서 사용자 정보 추출
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        User user = userService.findByEmail(userEmail);
+        
         Page<Voca> vocas = vocaService.getAllVocasByUserId(user, pageable);
         return ResponseEntity.ok(vocas);
     }

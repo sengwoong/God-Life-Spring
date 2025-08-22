@@ -105,17 +105,21 @@ class WordServiceTests {
             Word word = new Word();
             word.setWord("apple");
             word.setMeaning("사과");
+            word.setVoca(voca); // Voca 설정 추가
             Page<Word> wordPage = new PageImpl<>(Collections.singletonList(word));
 
+            when(vocaRepository.findById(1L)).thenReturn(Optional.of(voca)); // Voca 존재 확인 Mock 추가
             when(wordRepository.getAllWordsByVocaId(anyLong(), any(Pageable.class))).thenReturn(wordPage);
 
             // when
-            Page<Word> result = wordService.getAllwordsByVocaId(1L, Pageable.unpaged());
+            Page<Word> result = wordService.getAllwordsByVocaId(1L, user, Pageable.unpaged());
 
             // then
             assertNotNull(result);
             assertEquals(1, result.getTotalElements());
             assertEquals("apple", result.getContent().get(0).getWord());
+            verify(vocaRepository).findById(1L);
+            verify(wordRepository).getAllWordsByVocaId(anyLong(), any(Pageable.class));
         }
     }
 
@@ -136,7 +140,7 @@ class WordServiceTests {
             when(wordRepository.save(any(Word.class))).thenReturn(existingWord);
 
             // when
-            Word result = wordService.updateWord(1L, user.getId(), wordRequest);
+            Word result = wordService.updateWord(1L, wordRequest, user);
 
             // then
             assertNotNull(result);
@@ -157,7 +161,7 @@ class WordServiceTests {
 
             // when & then
             assertThrows(NotYourWordException.class, 
-                () -> wordService.updateWord(1L, 999L, wordRequest));
+                () -> wordService.updateWord(1L, wordRequest, new User("notowner@test.com")));
         }
     }
 
@@ -174,7 +178,7 @@ class WordServiceTests {
             when(wordRepository.delete(anyLong())).thenReturn(word);
 
             // when
-            Word result = wordService.deleteWord(1L, user.getId());
+            Word result = wordService.deleteWord(1L, user);
 
             // then
             assertNotNull(result);
@@ -192,7 +196,7 @@ class WordServiceTests {
 
             // when & then
             assertThrows(NotYourWordException.class, 
-                () -> wordService.deleteWord(1L, 999L));
+                () -> wordService.deleteWord(1L, new User("notowner@test.com")));
         }
     }
 } 

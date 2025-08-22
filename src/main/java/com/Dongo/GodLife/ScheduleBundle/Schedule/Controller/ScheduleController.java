@@ -30,14 +30,14 @@ public class ScheduleController {
     }
 
     @GetMapping("/user/{user_id}")
-    public ResponseEntity<Page<Schedule>> getScheduleByVocaId(
+    public ResponseEntity<java.util.List<Schedule>> getScheduleByVocaId(
             @PathVariable(name = "user_id") Long user_id,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size) throws NotYourScheduleException {
         Pageable pageable = PageRequest.of(page, size);
         User user = userService.CheckUserAndGetUser(user_id);
         Page<Schedule> schedules = scheduleService.getAllschedulesByUserId(user, pageable);
-        return ResponseEntity.ok(schedules);
+        return ResponseEntity.ok(schedules.getContent());
     }
 
     @GetMapping("/schedule/{schedule_id}/user/{user_id}")

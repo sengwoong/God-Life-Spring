@@ -31,18 +31,28 @@ public class MusicPersistenceAdapterStub implements MusicPersistenceAdapter {
     }
 
     @Override
-    public Page<Music> findPlaylistMusics(long playlistId, Pageable pageable) {
+    public Page<Music> findPlaylistMusics(Long playlistId, Pageable pageable) {
         List<Music> playlistMusics = musicList.stream()
                 .filter(music -> music.getPlaylist() != null && 
-                        music.getPlaylist().getPlaylistId() == playlistId)
+                        music.getPlaylist().getPlaylistId().equals(playlistId))
+                .collect(Collectors.toList());
+        return new PageImpl<>(playlistMusics, pageable, playlistMusics.size());
+    }
+    
+    @Override
+    public Page<Music> findPlaylistMusicsWithSearch(Long playlistId, String search, Pageable pageable) {
+        List<Music> playlistMusics = musicList.stream()
+                .filter(music -> music.getPlaylist() != null && 
+                        music.getPlaylist().getPlaylistId().equals(playlistId) &&
+                        music.getMusicTitle().toLowerCase().contains(search.toLowerCase()))
                 .collect(Collectors.toList());
         return new PageImpl<>(playlistMusics, pageable, playlistMusics.size());
     }
 
     @Override
-    public Optional<Music> findById(long musicId) {
+    public Optional<Music> findById(Long musicId) {
         return musicList.stream()
-                .filter(music -> music.getMusicId() == musicId)
+                .filter(music -> music.getMusicId().equals(musicId))
                 .findFirst();
     }
 
