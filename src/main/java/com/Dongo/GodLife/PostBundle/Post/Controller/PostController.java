@@ -51,8 +51,7 @@ public class PostController {
     public ResponseEntity<Post> getMyPostById(
             @PathVariable(name = "post_id") Long postId,
             @PathVariable(name = "user_id") Long userId) {
-        User user = userService.CheckUserAndGetUser(userId);
-        Post post = postService.findMyPostById(postId, user);
+        Post post = postService.findMyPostById(postId, userId);
         return ResponseEntity.ok(post);
     }
     

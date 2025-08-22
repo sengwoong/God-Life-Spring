@@ -37,8 +37,8 @@ public class PostService {
     }
     
     // 나의 포스트 찾기 (나만 볼 수 있는 내 게시물)
-    public Post findMyPostById(Long postId, User user) {
-        return postPersistenceAdapter.findByUserIdAndPostId(user.getId(), postId)
+    public Post findMyPostById(Long postId, Long userId) {
+        return postPersistenceAdapter.findByUserIdAndPostId(userId, postId)
                 .orElseThrow(() -> new EntityNotFoundException("내 게시물을 찾을 수 없습니다"));
     }
     
@@ -79,7 +79,7 @@ public class PostService {
     }
     
     public Post updatePost(Long postId, PostRequest request, User user) {
-        Post post = findMyPostById(postId, user);
+        Post post = findMyPostById(postId, user.getId());
         
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
@@ -93,14 +93,14 @@ public class PostService {
     }
     
     public Post toggleAdStatus(Long postId, User user) {
-        Post post = findMyPostById(postId, user);
+        Post post = findMyPostById(postId, user.getId());
         
         post.setIsAd(!post.getIsAd());
         return postPersistenceAdapter.save(post);
     }
     
     public void deletePost(Long postId, User user) {
-        Post post = findMyPostById(postId, user);
+        Post post = findMyPostById(postId, user.getId());
         
         postPersistenceAdapter.delete(post);
     }
