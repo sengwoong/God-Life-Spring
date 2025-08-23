@@ -159,4 +159,36 @@ public class JwtService {
     public void invalidateAllUserTokens(String userId) {
         tokenStorageService.invalidateAllUserTokens(userId);
     }
+
+    /**
+     * 액세스 토큰 유효성 검증 (AuthService용)
+     */
+    public Boolean isAccessTokenValid(String token) {
+        try {
+            final String extractedUsername = extractUsername(token);
+            boolean isValid = !isTokenExpired(token);
+            
+            // Redis에서 토큰 유효성 추가 확인
+            if (isValid) {
+                isValid = tokenStorageService.isAccessTokenValid(token);
+            }
+            
+            return isValid;
+        } catch (Exception e) {
+            log.error("Error validating access token: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 토큰에서 이메일 추출 (AuthService용)
+     */
+    public String extractEmail(String token) {
+        try {
+            return extractUsername(token);
+        } catch (Exception e) {
+            log.error("Error extracting email from token: {}", e.getMessage());
+            return null;
+        }
+    }
 }

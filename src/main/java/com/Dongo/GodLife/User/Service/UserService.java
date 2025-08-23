@@ -6,6 +6,7 @@ import com.Dongo.GodLife.User.Dto.UserResponse;
 import com.Dongo.GodLife.User.Exception.UserNotFoundException;
 import com.Dongo.GodLife.User.Model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import util.Validator;
 
@@ -15,13 +16,14 @@ import java.time.LocalDateTime;
 @Service
 public class UserService {
     private final UserPersistenceAdapter userPersistenceAdapter;
+    private final PasswordEncoder passwordEncoder;
 
     public User createUser(String email, String password, String nickName) {
         Validator.validateNickName(nickName);
         
         User user = new User();
         user.setEmail(email);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password)); // 비밀번호 암호화
         user.setNickName(nickName);
         user.setCreatedAt(LocalDateTime.now());
         return userPersistenceAdapter.save(user);
@@ -68,7 +70,10 @@ public class UserService {
 
     public User authenticateUser(String email, String password) {
         User user = findByEmail(email);
-        // TODO: 비밀번호 검증 로직 추가 (PasswordEncoder 사용)
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
         return user;
     }
 

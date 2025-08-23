@@ -8,13 +8,16 @@ import com.Dongo.GodLife.User.Model.JwtToken;
 import com.Dongo.GodLife.User.Model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AuthService {
+public class AuthService implements UserDetailsService {
 
     private final UserService userService;
     private final JwtService jwtService;
@@ -85,5 +88,44 @@ public class AuthService {
     public void forceLogout(String userId) {
         jwtService.invalidateAllUserTokens(userId);
         log.info("All tokens invalidated for user: {}", userId);
+    }
+
+    // JWT 필터에서 필요한 메서드들
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+        
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .authorities("USER")
+                .build();
+    }
+
+    /**
+     * JWT 토큰 유효성 검증
+     */
+    public boolean validateToken(String token) {
+        try {
+            return jwtService.isAccessTokenValid(token);
+        } catch (Exception e) {
+            log.error("Token validation failed: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * JWT 토큰에서 사용자 이메일 추출
+     */
+    public String getUserEmailFromToken(String token) {
+        try {
+            return jwtService.extractEmail(token);
+        } catch (Exception e) {
+            log.error("Failed to extract email from token: {}", e.getMessage());
+            return null;
+        }
     }
 }
