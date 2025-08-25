@@ -1,5 +1,6 @@
 package com.Dongo.GodLife.Config;
 
+import com.Dongo.GodLife.User.Filter.JwtAuthenticationFilter;
 import com.Dongo.GodLife.User.Service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
